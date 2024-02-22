@@ -36,7 +36,8 @@ action-state map을 이용하면, 다음과 같은 장점이 존재한다.
 
 예를 들어서, 바둑은 결정적(deterministic environment)환경이므로, $\eta(s_t, a_t)$를 상태 $s_t$에서 행동 $a_t$를 취했을 때의 행동으로 정해준다면, $\overline{Q}(s_t, a_t) = V(s_{t+1})$이 된다. 결정적 환경이 아니여도, 해당 행동을 취했을 떄의 정보를 추가해줄 수 있다는 장점이 있다. 예를 들어서, 빅 투라는 카드 게임을 생각해보자. 해당 게임의 경우 자신의 손패에서 족보를 만족하는 패를 먼저 다 버리면 이기는 게임이다. 해당 게임에서는 결정적 환경이 아니므로 비록 다음 상태를 예측할 수 없지만, 카드를 버린 뒤 남은 손패의 정보를 추가해서 action-state를 구성해줄 수 있다. 그러한 정보를 통해서 만약 이 패를 버렸을 시 다음에 버릴 수 있는 패의 정보를 알 수 있기 때문에, 해당 정보를 추가해준다면 아무런 정보도 없는 것보다 많은 장점이 존재한다.
 
-![ex_screenshot](./_images/go.png)
+![go](https://github.com/jh2525/jh2525.github.io/assets/160830734/634b2ab8-cbbc-43f0-b63c-9ee0d1c85880)
+
 
 **2.다양한 action shape 및 illegal action에 대하여 다루기 쉬워진다.**
 
@@ -49,7 +50,7 @@ action-state map을 이용하면, 다음과 같은 장점이 존재한다.
 
 
 # 3. actor based $\epsilon$-greedy policy
-action-state map을 통하여 action value와, policy를 구성해서 학습 시 한가지 문제가 존재한다. 만약 우리의 action value가 완벽하게 예측이 되거나, policy가 optimal policy이면, $\text{argmax}Q = \argmax{\pi}$가 항상 성립해야한다. 그러나, 학습 시 그렇지 않은 경우가 존재한다. 따라서, 이를 해결하고, action-value가 높다고 기대되는 행동에 대해서 좀 더 많이 탐험을하여, 정책 함수가 올바르게 학습될 수 있도록 다음과 같은 정책 $\pi_{\epsilon}$을 정의한다. (단, $0 < \epsilon < 1$)
+action-state map을 통하여 action value와, policy를 구성해서 학습 시 한가지 문제가 존재한다. 만약 우리의 action value가 완벽하게 예측이 되거나, policy가 optimal policy이면, $\text{argmax}Q = \text{argmax}{\pi}$가 항상 성립해야한다. 그러나, 학습 시 그렇지 않은 경우가 존재한다. 따라서, 이를 해결하고, action-value가 높다고 기대되는 행동에 대해서 좀 더 많이 탐험을하여, 정책 함수가 올바르게 학습될 수 있도록 다음과 같은 정책 $\pi_{\epsilon}$을 정의한다. (단, $0 < \epsilon < 1$)
 
 $\pi_{\epsilon} = \epsilon\times\text{GreedyPolicy} + (1-\epsilon)\pi$
 
@@ -140,11 +141,12 @@ state-value based actioned state algorithm은 action value를 예측하는 것�
 
 - 공통 상태 : state value를 계산할 때 단독으로 쓰이고, 행동 확률을 구할 때 action state와 쓰인다.
 - action state : 공통 상태와 함께 행동 확률을 구할 때 쓰인다. 
-![ex_screenshot](./_images/statevaluebasealgorithm.png)
+![statevaluebasealgorithm](https://github.com/jh2525/jh2525.github.io/assets/160830734/24c7c07c-cca9-439b-9230-1eb7fd55810d)
 
 ## b. recurrent Q-network
-recurrent Q-network의 motivation은 action state map $\eta$를 신경망으로 학습을 시키자는 것이다. 그렇다면, action state map $\eta$을 어떻게 해주는 것이 가장 효과적일까? 가장 기본적인 아이디어는 $\eta(s, a)$를 상태 $s$에서 행동 $a$를 취했을 때의 상태를 예측하게 해주는 것이다. 그러나, 해당 방법에는 두 가지 문제점이 있는데 첫 번째는, 확정적 환경이 아닌 경우 예측하기 어렵다는 점과 두 번째는, 두 상태 사이의 거리를 정의해주기 어렵다는 점이다. 따라서, 우리는 $\eta(s, a)$가 다음 상태를 **encode**하였을 때의 encod된 다음 상태를 예측하기로 해준다. (즉, action state encoder를 학습해준다.) 따라서, 이 방법은 첫 번째인, 확정적 환경이 아닌 상태에서도 다음 상태를 잘 예측되게 해준다. 만약, $\eta$가 잘 학습이 되었다면, 다음 상태의 가능성을 내포한 encode된 state를 예측할 것이기 때문이다. 그러나 두 번째 문제점이 아직 해결되지 않았다. 만약 단순히 target값을 다음 상태의 encode된 것으로 정해주면 해당 모델은 단순히 encode를 작은 값으로 진행하기 때문이다. 따라서, 우리는 두 번째 문제점을 해결해주기 위해서 단순히 동일한 critic layer의 input으로 넣었을 때, 동일한 결과값을 출력하도록 하는 것이다. 즉, 만약, 상태 s에서 행동 a를 취했을 때의 상태가 $s^*$라면, $\overline{Q}(\eta(s, a)) = V(s^*)$가 되도록 패널티를 추가해준다. 이러면, 모델은 $\eta(s, a)$와 $s^*$를 encode한 상태에서의 가치를 동일한 결과값이 나오는 쪽으로 학습이 진행하게 될 것이다.
+recurrent Q-network의 motivation은 action state map $\eta$를 신경망으로 학습을 시키자는 것이다. 그렇다면, action state map $\eta$을 어떻게 해주는 것이 가장 효과적일까? 가장 기본적인 아이디어는 $\eta(s, a)$를 상태 $s$에서 행동 $a$를 취했을 때의 상태를 예측하게 해주는 것이다. 그러나, 해당 방법에는 두 가지 문제점이 있는데 첫 번째는, 확정적 환경이 아닌 경우 예측하기 어렵다는 점과 두 번째는, 두 상태 사이의 거리를 정의해주기 어렵다는 점이다. 따라서, 우리는 $\eta(s, a)$가 다음 상태를 **encode**하였을 때의 encod된 다음 상태를 예측하기로 해준다. (즉, action state encoder를 학습해준다.) 따라서, 이 방법은 첫 번째인, 확정적 환경이 아닌 상태에서도 다음 상태를 잘 예측되게 해준다. 만약, $\eta$가 잘 학습이 되었다면, 다음 상태의 가능성을 내포한 encode된 state를 예측할 것이기 때문이다. 그러나 두 번째 문제점이 아직 해결되지 않았다. 만약 단순히 target값을 다음 상태의 encode된 것으로 정해주면 해당 모델은 단순히 encode를 작은 값으로 진행하기 때문이다. 따라서, 우리는 두 번째 문제점을 해결해주기 위해서 단순히 동일한 critic layer의 input으로 넣었을 때, 동일한 결과값을 출력하도록 하는 것이다. 즉, 만약, 상태 s에서 행동 a를 취했을 때의 상태가 $s'$라면, $\overline{Q}(\eta(s, a)) = V(s')$가 되도록 패널티를 추가해준다. 이러면, 모델은 $\eta(s, a)$와 $s'$를 encode한 상태에서의 가치를 동일한 결과값이 나오는 쪽으로 학습이 진행하게 될 것이다.
 
-![ex_screenshot](./_images/recurrentQ.png)
+![recurrentQ](https://github.com/jh2525/jh2525.github.io/assets/160830734/998f612c-4bdd-4c73-8f43-78b02ecbc39b)
+
 
 # Reference
