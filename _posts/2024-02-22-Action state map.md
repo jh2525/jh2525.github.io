@@ -85,7 +85,7 @@ $\displaystyle{
 
 위에서 설명한 때때로, 3, 4번 방식으로 실제 학습을 진행할 시 gradient exploding문제에 직면하게된다. 3번의 경우는 epsilon greedy 정책을 따라서, action을 취했을 때, 해당 actio을 policy에 따라서 행동할 확률이 0에 가까울 때, 해당 action을 취할 확률이 조금 변해도, probability ratio는 크게 변하기 때문이다. 따라서, probability ration를 구할 때 clip을 이용해줘서 두 log probability의 차가 특정 값을 넘지 않도록 한다. 4번의 경우에서는 logit의 값이 매우 커지면서, gradient exploding이 발생할 수 있는데, max logit값을 따로 저장해준다음에, 활용해준다.
 
-### Algorithm 5.1: Calculate policy by using $\rho$
+## Algorithm 5.1: Calculate policy by using $\rho$
 
 **Set** $\theta_1, \theta_2$, parameters of two policies $\pi_{\theta_1}, \pi_{\theta_2}$  
 **Set** $\eta$, action state map  
@@ -105,7 +105,7 @@ $\pi_{\theta2} \approx \pi_{\theta_1}^{\theta_2} = \frac{e^{l_{\theta_2(s, a)} -
 # 6. Training Algorithm
 위에 방법들을 이용하여, PPO 기반의 actor-based map을 활용한 모델을 학습하는 의사 코드를 다음과 같다:
 
-### Algorithm 6.1: PPO with action state map
+## Algorithm 6.1: PPO with action state map
 
 **Set** $\epsilon \geq 0$, the clipping variable  
 **Set** $\epsilon_p \geq 0$, the probability clipping variable  
@@ -124,7 +124,7 @@ Randomly **initialize** the actor and critic parameters $\theta_1, \theta_2$
 ㅤㅤ**For** $j = 1, 2, \dots, K$ do  
 ㅤㅤㅤㅤ**Sample** train data in $\mathcal{M}$  
 ㅤㅤㅤㅤ**Optimize** $\theta_C$ by minimizing $(Q_{\theta_C}(s, a) - T(s, a))^2$  
-ㅤㅤㅤㅤ**Calculate** probability ratio $r_p = \frac{\pi_\theta(s, a)}{\pi_{\theta_{\text{old}}}(s, a)} \approx \frac{\pi^{\theta}_{\theta_\text{old}}(s, a)}{\pi_{\theta_{\text{old}}}(s, a)}$ using algorithm 5.1  
+ㅤㅤㅤㅤ**Calculate** probability ratio $r_p = {\pi_\theta(s, a)}/{\pi_{\theta_{\text{old}}}(s, a)} \approx {\pi^{\theta}_{\theta_\text{old}}(s, a)}/{\pi_{\theta_{\text{old}}}(s, a)}$ using algorithm 5.1  
 ㅤㅤㅤㅤ**Optimize** $\theta_A$ by minimizing $-\min(Ar_p, \text{clip}(Ar_p, 1-\epsilon, 1+\epsilon))$  
 ㅤㅤ**Clear** $\mathcal{M}$
 
