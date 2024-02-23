@@ -13,12 +13,12 @@ date: 2024-02-22
 last_modified_at: 2024-02-22
 ---
 
-# 1.개요
-어떤 환경은 수 많은 행동의 가짓수를 가지고있다. 예를 들어서, 19x19 격자의 바둑판에서 오목을 둔다고 생각해보자. 그러면, 처음 돌을 둘 수 있는 수는 19*19 =  361가지가 있고, 각 플레이어가 차례를 돌아가면서 점점 돌을 둘 수 있는 경우의 수가 줄어든다. 우리가 만약 오목을 두는 에이전트를 deep neural network를 통해서 만든다고 상상해보자. 그러면, 우리는 각 자리에 돌을 두었을때의 action value 또는 각 action에 따른 확률을 어떻게 구해주는 것이 가장 바람직할까?
+# 1.Introduction
+어떤 환경은 수 많은 행동의 가짓수를 가지고있다. 예를 들어서, $19\times19$ 격자의 바둑판에서 오목을 둔다고 생각해보자. 그러면, 처음 돌을 둘 수 있는 수는 19*19 =  361가지가 있고, 각 플레이어가 차례를 돌아가면서 점점 돌을 둘 수 있는 경우의 수가 줄어든다. 우리가 만약 오목을 두는 에이전트를 deep neural network를 통해서 만든다고 상상해보자. 그러면, 우리는 각 자리에 돌을 두었을때의 action value 또는 각 action에 따른 확률을 어떻게 구해주는 것이 가장 바람직할까?
 
-단순한 방법으로는, 단순히 19*19개의 값을 출력해서 각 자리에 둘 확률과 두었을 때의 가치를 구하는 방법이 있을 것이다. 해당 방법은 단순하지만, 우리가 앞서 상상한 환경에서는 몇가지 문제점이 있다. 첫 번째로는, illegal action을 어떻게 처리하는지에 대한 문제이다. illegal action을 처리하는 방법에는 여러가지 방법이 있겠지만 보통은 해당 action에 peanalty를 부과하거나, 해당 action에 대해서는 masking 처리해서, action을 방지하는 방법이 있다. 두 번째로는, 항상 모든 action에 대한 결과에 대해서 결과값을 출력한다는 것이다. 그렇다면 이러한 방법을 어떻게 극복할 수 있을까? 이 글에서는 각 상태와 행동쌍에 대해서 일대일 대응을 만족하는 **action state**를 통해서, 각 **action state**에 대하여 가치를 구해서 해결할 것이다. 그러나, 해당 방법에도 몇가지 문제점이 존재하는데, 학습 방법과 효율성이 그 예다. 하지만, 이런 문제점은 정책 함수의 근사와 기존 정책의 결합을 통해서 해결할 수 있는데 **action state**에 대해서 정의하고, 해결 방법에 대해서 알아보도록한다.
+단순한 방법으로는, 단순히 $19\times19$개의 값을 출력해서 각 자리에 둘 확률과 두었을 때의 가치를 구하는 방법이 있을 것이다. 해당 방법은 단순하지만, 우리가 앞서 상상한 환경에서는 몇가지 문제점이 있다. 첫 번째로는, illegal action을 어떻게 처리하는지에 대한 문제이다. illegal action을 처리하는 방법에는 여러가지 방법이 있겠지만 보통은 해당 action에 peanalty를 부과하거나, 해당 action에 대해서는 masking 처리해서, action을 방지하는 방법이 있다. 두 번째로는, 항상 모든 action에 대한 결과에 대해서 결과값을 출력한다는 것이다. 그렇다면 이러한 방법을 어떻게 극복할 수 있을까? 이 글에서는 각 상태와 행동쌍에 대해서 일대일 대응을 만족하는 **action state**를 통해서, 각 **action state**에 대하여 가치를 구해서 해결할 것이다. 그러나, 해당 방법에도 몇가지 문제점이 존재하는데, 학습 방법과 효율성이 그 예다. 하지만, 이런 문제점은 정책 함수의 근사와 기존 정책의 결합을 통해서 해결할 수 있는데 **action state**에 대해서 정의하고, 해결 방법에 대해서 알아보도록한다.
 
-# 2. action state
+# 2.action state
 모든 state들의 집합을 $\mathcal{S}$, 모든 action들의 집합을 $\mathcal{A}$라고하자. 그러면, state-action쌍에 대하여 다음과 같은 함수를 정의할 수 있다.
 
 $\eta: \mathcal{S}\times \mathcal{A} \rightarrow \overline{S}$ 이고, $\eta$는 bijective 그러면 우리는 이 함수를 **action state map**이라고 정의한다.
@@ -49,14 +49,14 @@ action-state map을 이용하면, 다음과 같은 장점이 존재한다.
 
 
 
-# 3. actor based $\epsilon$-greedy policy
-action-state map을 통하여 action value와, policy를 구성해서 학습 시 한가지 문제가 존재한다. 만약 우리의 action value가 완벽하게 예측이 되거나, policy가 optimal policy이면, $\text{argmax}Q = \text{argmax}{\pi}$가 항상 성립해야한다. 그러나, 학습 시 그렇지 않은 경우가 존재한다. 따라서, 이를 해결하고, action-value가 높다고 기대되는 행동에 대해서 좀 더 많이 탐험을하여, 정책 함수가 올바르게 학습될 수 있도록 다음과 같은 정책 $\pi_{\epsilon}$을 정의한다. (단, $0 < \epsilon < 1$)
+# 3.actor based $\epsilon$-greedy policy
+action state map을 통하여 action value와, policy를 구성해서 학습 시 한가지 문제가 존재한다.(DQN과 같은 알고리즘을 사용할 것이라면 문제점이 되지 않지만) 만약 우리의 action value가 완벽하게 예측이 되거나, policy가 optimal policy이면, $\text{argmax}Q = \text{argmax}{\pi}$가 항상 성립해야한다. 그러나, 학습 시 그렇지 않은 경우가 존재한다. 따라서, 이를 해결하고, action-value가 높다고 기대되는 행동에 대해서 좀 더 많이 탐험을하여, 정책 함수가 올바르게 학습될 수 있도록 다음과 같은 정책 $\pi_{\epsilon}$을 정의한다. (단, $0 < \epsilon < 1$)
 
 $\pi_{\epsilon} = \epsilon\times\text{GreedyPolicy} + (1-\epsilon)\pi$
 
 
-# 4. Appoximation of $\pi$
-마지막으로 action-state map을 통해서 학습을 진행하려고 하면은, 우리는 $\pi(a_i, s_i)$를 구하기 위해서, 모든 actioned-state에서의 값을 다시 구해줘야한다. 그러나, 이는 취하지 않은 행동에 대해서도 값을 구하기 때문에, 학습의 속도에 많은 영향을 준다. 그러나, 만약 우리가 특정 행동을 강화했을 때, 다른 행동의 logit값이 크게 변하지 않는다면, 에피소드 진행 시 취한 ationed-state만을통해서 새로운 정책의 해당 actioned-state에서의 확률을 구할 수 있다. 만약 우리가 softmax함수를 통해서 logit을 통해서 확률을 구한다고하자. 상태가 $s$일 때, action $a$를 취했을 때의 logit을 $l(s, a)$로 표기하자. 그러면, $$\pi(s, a) = \frac{e^{l(s, a)}}{\sum_{i=1}^{n} e^{l(s, a_i)}}$$이다. 현재 우리가 직면한 문제점은 취하지 않은 action에 대해서도 logit을 구해야되기 때문에, 훈련 시 많은 리소스가 소모된다는 단점이 있다. 따라서, 우리는 추론 시 $\sum_{i=1}^{n} e^{l(s, a_i)} \ - e^{l(s,a)} = \rho(s, a)$값을 저장한다음에, 활용할 것이다.  그러면,  $\pi(s, a) = \frac{e^{l(s, a)}}{\rho(s, a) + e^{l(s, a)}}$이다. 이제, 두 파라미터 $\theta_1, \theta_2$에 대응하는 정책과, logit을 $\pi_{\theta_1}, \pi_{\theta_2}, l_{\theta_1}, l_{\theta_2}$라고하자. 마찬가지로, $\sum_{i=1}^{n} e^{l_{\theta_i}(s, a_i)} \ - e^{l_{\theta_i}(s,a)} = \rho_{\theta_i}(s, a) \quad (i = 1, 2)$라고하자. 그러면, $\theta_1$에 대한 $\theta_2$의 정책 $\pi_{\theta_1}^{\theta_2}$를 다음과 같이 정의하자. $$\pi_{\theta_1}^{\theta_2}(s, a) = \frac{e^{l_{\theta_2}(s, a)}}{\rho_{\theta_1}(s, a) + e^{l_{\theta2}(s, a)}}$$ 그러면, 다음이 성립한다.
+# 4.Appoximation of $\pi$
+마지막으로 action state map을 통해서 정책을 학습을 진행하려고 하면은, 우리는 $\pi(a_i, s_i)$를 구하기 위해서, 모든 actioned-state에서의 값을 다시 구해줘야한다. 그러나, 이는 취하지 않은 행동에 대해서도 값을 구하기 때문에, 학습의 속도에 많은 영향을 준다. 그러나, 만약 우리가 특정 행동을 강화했을 때, 다른 행동의 logit값이 크게 변하지 않는다면, 에피소드 진행 시 취한 ationed-state만을통해서 새로운 정책의 해당 actioned-state에서의 확률을 구할 수 있다. 만약 우리가 softmax함수를 통해서 logit을 통해서 확률을 구한다고하자. 상태가 $s$일 때, action $a$를 취했을 때의 logit을 $l(s, a)$로 표기하자. 그러면, $$\pi(s, a) = \frac{e^{l(s, a)}}{\sum_{i=1}^{n} e^{l(s, a_i)}}$$이다. 현재 우리가 직면한 문제점은 취하지 않은 action에 대해서도 logit을 구해야되기 때문에, 훈련 시 많은 리소스가 소모된다는 단점이 있다. 따라서, 우리는 추론 시 $\sum_{i=1}^{n} e^{l(s, a_i)} \ - e^{l(s,a)} = \rho(s, a)$값을 저장한다음에, 활용할 것이다.  그러면,  $\pi(s, a) = \frac{e^{l(s, a)}}{\rho(s, a) + e^{l(s, a)}}$이다. 이제, 두 파라미터 $\theta_1, \theta_2$에 대응하는 정책과, logit을 $\pi_{\theta_1}, \pi_{\theta_2}, l_{\theta_1}, l_{\theta_2}$라고하자. 마찬가지로, $\sum_{i=1}^{n} e^{l_{\theta_i}(s, a_i)} \ - e^{l_{\theta_i}(s,a)} = \rho_{\theta_i}(s, a) \quad (i = 1, 2)$라고하자. 그러면, $\theta_1$에 대한 $\theta_2$의 정책 $\pi_{\theta_1}^{\theta_2}$를 다음과 같이 정의하자. $$\pi_{\theta_1}^{\theta_2}(s, a) = \frac{e^{l_{\theta_2}(s, a)}}{\rho_{\theta_1}(s, a) + e^{l_{\theta2}(s, a)}}$$ 그러면, 다음이 성립한다.
 
 **Theorem 4.1** 
 
@@ -81,7 +81,7 @@ $\displaystyle{
 
 여기서 주목해야 할 점은 $\rho$은 우리가 택한 행동의 logit값과는 무관하다는 것이다. 따라서, 우리가 학습을 진행하면서, 우리가 취한 행동에 대한 logit을 주로 변화 시켜준다고 가정하면은, $\pi_{\theta_2}$대신에, $\pi_{\theta_1}^{\theta_2}$를 사용해서 학습을 진행해도, 잘 근사가 된다는 점이다. 따라서, 우리는 우리가 취한 행동에 대해서만 logit값을 구해주면된다. 이는 우리가 각 행동마다 택할 수 있는 평균 행동의 개수가 $n$개였다면 학습을 약 $n$배 더 효율적으로 만든다.
 
-# 5. handling of gradient exploding
+# 5.handling of gradient exploding
 
 위에서 설명한 때때로, 3, 4번 방식으로 실제 학습을 진행할 시 gradient exploding문제에 직면하게된다. 3번의 경우는 epsilon greedy 정책을 따라서, action을 취했을 때, 해당 actio을 policy에 따라서 행동할 확률이 0에 가까울 때, 해당 action을 취할 확률이 조금 변해도, probability ratio는 크게 변하기 때문이다. 따라서, probability ration를 구할 때 clip을 이용해줘서 두 log probability의 차가 특정 값을 넘지 않도록 한다. 4번의 경우에서는 logit의 값이 매우 커지면서, gradient exploding이 발생할 수 있는데, max logit값을 따로 저장해준다음에, 활용해준다.
 
@@ -102,10 +102,15 @@ $\displaystyle{
 **Set** $\rho_{\theta_1} = \sum_{a_i \neq a}{e^{l_{\theta_1}(s, a_i) - l_{\text{max}}}}$  
 $\pi_{\theta2} \approx \pi_{\theta_1}^{\theta_2} = \frac{e^{l_{\theta_2(s, a)} - l_{\text{max}}}}{\rho_{\theta_1} + e^{l_{\theta_2(s, a)} - l_{\text{max}}}}$
 
-# 6. Training Algorithm
-위에 방법들을 이용하여, PPO 기반의 actor-based map을 활용한 모델을 학습하는 의사 코드를 다음과 같다:
 
-## Algorithm 6.1: PPO with action state map
+
+
+
+
+# Appendix
+
+# a. PPO with action state map
+## Algorithm a.1: PPO with action state map
 
 **Set** $\epsilon \geq 0$, the clipping variable  
 **Set** $\epsilon_p \geq 0$, the probability clipping variable  
@@ -128,25 +133,20 @@ Randomly **initialize** the actor and critic parameters $\theta_1, \theta_2$
 ㅤㅤㅤㅤ**Optimize** $\theta_A$ by minimizing $-\min(Ar_p, \text{clip}(Ar_p, 1-\epsilon, 1+\epsilon))$  
 ㅤㅤ**Clear** $\mathcal{M}$
 
-ㅤㅤㅤㅤ
-
-
-
-
-# Appendix
-본문에서는 ppo 알고리즘에 action state를 이용하는 것을 초점을 맞췄지만, 부록에서는 action state를 일반적으로 활용한 몇몇 아이디어에 대해서 설명한다.
-
-## a. state value based action state algorithm
+## b. state value based action state algorithm
 state-value based actioned state algorithm은 action value를 예측하는 것이 아닌 다음과 같이 두 가지를 이용해서 state value값과 행동 확률을 계산한다. 
 
 - 공통 상태 : state value를 계산할 때 단독으로 쓰이고, 행동 확률을 구할 때 action state와 쓰인다.
 - action state : 공통 상태와 함께 행동 확률을 구할 때 쓰인다. 
 ![statevaluebasealgorithm](https://github.com/jh2525/jh2525.github.io/assets/160830734/24c7c07c-cca9-439b-9230-1eb7fd55810d)
 
-## b. recurrent Q-network
+## c. recurrent Q-network
 recurrent Q-network의 motivation은 action state map $\eta$를 신경망으로 학습을 시키자는 것이다. 그렇다면, action state map $\eta$을 어떻게 해주는 것이 가장 효과적일까? 가장 기본적인 아이디어는 $\eta(s, a)$를 상태 $s$에서 행동 $a$를 취했을 때의 상태를 예측하게 해주는 것이다. 그러나, 해당 방법에는 두 가지 문제점이 있는데 첫 번째는, 확정적 환경이 아닌 경우 예측하기 어렵다는 점과 두 번째는, 두 상태 사이의 거리를 정의해주기 어렵다는 점이다. 따라서, 우리는 $\eta(s, a)$가 다음 상태를 **encode**하였을 때의 encod된 다음 상태를 예측하기로 해준다. (즉, action state encoder를 학습해준다.) 따라서, 이 방법은 첫 번째인, 확정적 환경이 아닌 상태에서도 다음 상태를 잘 예측되게 해준다. 만약, $\eta$가 잘 학습이 되었다면, 다음 상태의 가능성을 내포한 encode된 state를 예측할 것이기 때문이다. 그러나 두 번째 문제점이 아직 해결되지 않았다. 만약 단순히 target값을 다음 상태의 encode된 것으로 정해주면 해당 모델은 단순히 encode를 작은 값으로 진행하기 때문이다. 따라서, 우리는 두 번째 문제점을 해결해주기 위해서 단순히 동일한 critic layer의 input으로 넣었을 때, 동일한 결과값을 출력하도록 하는 것이다. 즉, 만약, 상태 s에서 행동 a를 취했을 때의 상태가 $s'$라면, $\overline{Q}(\eta(s, a)) = V(s')$가 되도록 패널티를 추가해준다. 이러면, 모델은 $\eta(s, a)$와 $s'$를 encode한 상태에서의 가치를 동일한 결과값이 나오는 쪽으로 학습이 진행하게 될 것이다.
 
 ![recurrentQ](https://github.com/jh2525/jh2525.github.io/assets/160830734/998f612c-4bdd-4c73-8f43-78b02ecbc39b)
 
 
 # Reference
+
+1.Sutton, R. S., & Barto, A. G. (2018). Reinforcement learning: An introduction (2nd ed.). The MIT Press.  
+2.Ravichandiran, S. (2020). Deep reinforcement learning in Python: A hands-on guide. Pearson Education.
