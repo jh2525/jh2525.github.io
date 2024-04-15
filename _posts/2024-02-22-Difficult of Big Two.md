@@ -29,4 +29,4 @@ last_modified_at: 2024-02-22
 
 이를 다룬 포스트는 아래를 참고하자.
 
-[Global reward prediction] : 
+[Global reward prediction]( : )
