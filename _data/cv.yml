@@ -1,0 +1,92 @@
+cv:
+  name: JunHyeok Oh
+  label: Reinforcement Learning Researcher
+  email: the2ndlaw@korea.ac.kr
+  location: Seoul, Korea
+  image: ""
+  summary: Researcher at Korea University working on reinforcement learning, including offline RL, diffusion planning, and multi-agent RL.
+
+  social_networks:
+    - network: GitHub
+      username: jh2525
+    - network: LinkedIn
+      username: junhyeok-oh-805b4a366
+    - network: GoogleScholar
+      username: mklwOMMAAAAJ
+
+  sections:
+    Education:
+      - institution: Korea University
+        location: Seoul, Korea
+        url: https://www.korea.ac.kr/
+        area: Artificial Intelligence
+        studyType: Integrated M.S./Ph.D.
+        start_date: 2025
+        highlights:
+          - Advised by Prof. Byung-Jun Lee.
+
+      - institution: Korea National University of Education
+        location: Cheongju, Korea
+        area: Mathematics Education
+        studyType: B.S.
+        start_date: 2020-03
+        end_date: 2024-02
+
+    Publications:
+      - title: "TABX: A High-Throughput Sandbox Battle Simulator for Multi-Agent Reinforcement Learning"
+        authors:
+          - "Hayeong Lee\\*"
+          - "**JunHyeok Oh**\\*"
+          - Byung-Jun Lee
+        publisher: International Conference on Machine Learning (ICML)
+        releaseDate: 2026
+        url: https://arxiv.org/abs/2602.01665
+        summary: "\\* Equal contribution (co-first author)."
+
+      - title: Prior-Guided Diffusion Planning for Offline Reinforcement Learning
+        authors:
+          - Donghyeon Ki
+          - "**JunHyeok Oh**"
+          - Seong-Woong Shim
+          - Byung-Jun Lee
+        publisher: Conference on Neural Information Processing Systems (NeurIPS)
+        releaseDate: 2025
+        url: https://arxiv.org/abs/2505.10881
+
+      - title: "Rethinking DPO: The Role of Rejected Responses in Preference Misalignment"
+        authors:
+          - Jason H. D. Cho
+          - "**JunHyeok Oh**"
+          - Myunsoo Kim
+          - Byung-Jun Lee
+        publisher: Findings of EMNLP
+        releaseDate: 2025
+        url: https://arxiv.org/abs/2506.12725
+
+      - title: Iterative Prompt Refinement for Safer Text-to-Image Generation
+        authors:
+          - "Jinwoo Jeon\\*"
+          - "**JunHyeok Oh**\\*"
+          - Hayeong Lee
+          - Byung-Jun Lee
+        publisher: Conference on Empirical Methods in Natural Language Processing (EMNLP)
+        releaseDate: 2025
+        url: https://arxiv.org/abs/2509.13760
+        summary: "\\* Equal contribution (co-first author)."
+
+      - title: Offline Reinforcement Learning with Penalized Action Noise Injection
+        authors:
+          - "**JunHyeok Oh**"
+          - Byung-Jun Lee
+        publisher: arXiv preprint
+        releaseDate: 2025
+        url: https://arxiv.org/abs/2507.02356
+
+    Awards:
+      - title: "3rd Place (Encouragement Award), Han River Water Level Prediction AI Competition for Paldang Dam Flood Safety Operation"
+        date: 2022-10
+        awarder: Korea Hydro & Nuclear Power (KHNP)
+
+    Skills:
+      - name: Research Interests
+        keywords: "Reinforcement Learning, Offline RL, Diffusion Planning, Multi-Agent RL, LLM Alignment"
