@@ -96,6 +96,19 @@ pre.bib{font-family:var(--mono);font-size:14px;line-height:1.55;background:var(-
   background:#fff;color:var(--ink);cursor:pointer}
 .copy:hover{border-color:var(--accent);color:var(--accent)}
 footer{padding-block:40px 56px;text-align:center;font-size:13.5px;color:var(--ink-2)}
+
+/* ---------- scrubbable video players (replace the GIFs) */
+.player{position:relative;border-radius:6px;overflow:hidden;background:#fff;line-height:0}
+.player video{width:100%;height:auto;display:block;cursor:pointer}
+.ctrl{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#fafafa;border-top:1px solid var(--rule);line-height:1}
+.ctrl button{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:999px;border:0;background:var(--btn);color:#fff;cursor:pointer}
+.ctrl button:hover{background:var(--btn-hover)}
+.ctrl button svg{width:14px;height:14px;fill:currentColor}
+.ctrl .spd{width:auto;padding:0 10px;font:600 12.5px var(--mono);background:#fff;color:var(--ink);border:1px solid var(--rule)}
+.ctrl .spd:hover{background:#fff;border-color:var(--accent);color:var(--accent)}
+.ctrl input[type=range]{flex:1;min-width:60px;accent-color:var(--accent);height:22px;margin:0;cursor:pointer}
+.ctrl .tm{flex:none;font:500 12.5px var(--mono);color:var(--ink-2);font-variant-numeric:tabular-nums;min-width:8.4em;text-align:right}
+@media (max-width:520px){.ctrl .tm{display:none}}
 </style>
 
 </head>
@@ -114,7 +127,7 @@ footer{padding-block:40px 56px;text-align:center;font-size:13.5px;color:var(--in
 
 <div class="container teaser">
   <figure class="narrow">
-    <div class="shot"><img src="media/plan_build.gif" width="960" height="430" alt="Two route plans on Maze2D-Large growing from only a start and a goal: tokens are inserted until sigma reaches 1, then they only move into place. The near goal ends with 10 tokens, the far goal with 38."></div>
+    <div class="player"><video muted playsinline loop preload="metadata" width="960" height="430" poster="media/video/plan_build.jpg" aria-label="Two route plans on Maze2D-Large growing from only a start and a goal: tokens are inserted until sigma reaches 1, then they only move into place. The near goal ends with 10 tokens, the far goal with 38."><source src="media/video/plan_build.mp4" type="video/mp4"></video><div class="ctrl"><button class="pp" type="button" aria-label="Play"></button><input type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through the animation"><button class="spd" type="button" aria-label="Playback speed">1×</button><span class="tm">0.0 / 0.0 s</span></div></div>
     <p class="subtitle"><b>HorizonFlow treats plan length as an output of generation.</b> Starting from only the start and goal, tokens are inserted while the generation clock σ is below 1 and refined by flow matching; the near goal settles at 10 tokens, the far one at 38 — no horizon was given.</p>
   </figure>
 </div>
@@ -133,7 +146,7 @@ footer{padding-block:40px 56px;text-align:center;font-size:13.5px;color:var(--in
       <p class="justify">Inpainting planners pin the start and the goal and fill in the plan between them, so the plan length is an assumed travel time chosen before any content exists. Too short, and the plan is squeezed through walls; too long, and it wanders before it arrives.</p>
     </div>
     <figure>
-      <div class="shot"><img src="media/horizon_gen.gif" width="760" height="431" loading="lazy" alt="Plans being generated on Maze2D-Large for prescribed horizons 64, 128, 256 and 384 steps. Diffuser and a fixed-length HorizonFlow planner produce wall-crossing plans for the far goal at short horizons and detours for the near goal at long ones; HorizonFlow with generated length reaches both goals the same way at every horizon."></div>
+      <div class="player"><video muted playsinline loop preload="metadata" width="760" height="431" poster="media/video/horizon_gen.jpg" aria-label="Plans being generated on Maze2D-Large for prescribed horizons 64, 128, 256 and 384 steps. Diffuser and a fixed-length HorizonFlow planner produce wall-crossing plans for the far goal at short horizons and detours for the near goal at long ones; HorizonFlow with generated length reaches both goals the same way at every horizon."><source src="media/video/horizon_gen.mp4" type="video/mp4"></video><div class="ctrl"><button class="pp" type="button" aria-label="Play"></button><input type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through the animation"><button class="spd" type="button" aria-label="Playback speed">1×</button><span class="tm">0.0 / 0.0 s</span></div></div>
       <figcaption><b>Generation under a prescribed horizon.</b> For each H = 64 → 128 → 256 → 384 steps, three planners each generate one plan from noise: Diffuser (256 denoising steps, every 8th shown), a fixed-length HorizonFlow planner with the same Transformer but trained without insertion, and HorizonFlow with insertion (20 flow steps). Given H = 64, both fixed-length planners reach the far goal (N* = 320) only by cutting through walls; given H = 384, they detour around the near goal (N* = 64). HorizonFlow ignores H and picks its own number of waypoints, 13 steps apart (3 for the near goal, 27 for the far one). Plans are shown before any controller runs.</figcaption>
     </figure>
     <figure style="margin-top:28px">
@@ -154,11 +167,11 @@ footer{padding-block:40px 56px;text-align:center;font-size:13.5px;color:var(--in
     </div>
     <div class="stack" style="margin-top:22px">
       <figure>
-        <div class="shot"><img src="media/candidates.gif" width="840" height="665" loading="lazy" alt="Sixteen of 64 route candidates for one start and goal grow at the same time along different corridors; at the end all but the one with the fewest tokens fade out."></div>
+        <div class="player"><video muted playsinline loop preload="metadata" width="840" height="665" poster="media/video/candidates.jpg" aria-label="Sixteen of 64 route candidates for one start and goal grow at the same time along different corridors; at the end all but the one with the fewest tokens fade out."><source src="media/video/candidates.mp4" type="video/mp4"></video><div class="ctrl"><button class="pp" type="button" aria-label="Play"></button><input type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through the animation"><button class="spd" type="button" aria-label="Playback speed">1×</button><span class="tm">0.0 / 0.0 s</span></div></div>
         <figcaption><b>Best-of-K by count.</b> One sampler call draws 64 route candidates for a start–goal pair with two corridors of equal length; the 16 shown were chosen to cover the different routes in the pool (upper corridor, lower corridor, loops). The candidate with the fewest tokens (n = 14) is kept.</figcaption>
       </figure>
       <figure>
-        <div class="shot"><img src="media/fk.gif" width="840" height="420" loading="lazy" alt="Sixteen colour-coded chains generate plans in one maze for a far goal; at two checkpoints a panel shows each chain's predicted length and resampling weight, chains without offspring fade out and survivors are copied, so fewer colours remain; at the end the shortest chain is highlighted."></div>
+        <div class="player"><video muted playsinline loop preload="metadata" width="840" height="420" poster="media/video/fk.jpg" aria-label="Sixteen colour-coded chains generate plans in one maze for a far goal; at two checkpoints a panel shows each chain's predicted length and resampling weight, chains without offspring fade out and survivors are copied, so fewer colours remain; at the end the shortest chain is highlighted."><source src="media/video/fk.mp4" type="video/mp4"></video><div class="ctrl"><button class="pp" type="button" aria-label="Play"></button><input type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through the animation"><button class="spd" type="button" aria-label="Playback speed">1×</button><span class="tm">0.0 / 0.0 s</span></div></div>
         <figcaption><b>Feynman–Kac steering.</b> Sixteen chains for a far goal (N* = 382), one colour per original chain. At σ = 0.3 and 0.7 each chain is scored by its predicted final length n̂ — tokens present plus the tokens the count heads still expect — and resampled with weight ∝ exp(−0.5 n̂). Chains without offspring are dropped and survivors are copied in their place, so the colours thin out and compute moves to short routes before they are finished. Faint strokes are tokens still being refined.</figcaption>
       </figure>
     </div>
@@ -171,16 +184,16 @@ footer{padding-block:40px 56px;text-align:center;font-size:13.5px;color:var(--in
     </div>
     <div class="stack" style="margin-top:22px">
       <figure>
-        <div class="shot"><img src="media/live_antg_t2.gif" width="1040" height="460" loading="lazy" alt="AntMaze-Giant task 2: rendered episode next to a top-down map with the ant's trail and the current route plan, which is replaced every 8 steps and gets shorter as the ant nears the goal. The goal is reached at step 742."></div>
+        <div class="player"><video muted playsinline loop preload="metadata" width="1040" height="460" poster="media/video/live_antg_t2.jpg" aria-label="AntMaze-Giant task 2: rendered episode next to a top-down map with the ant's trail and the current route plan, which is replaced every 8 steps and gets shorter as the ant nears the goal. The goal is reached at step 742."><source src="media/video/live_antg_t2.mp4" type="video/mp4"></video><div class="ctrl"><button class="pp" type="button" aria-label="Play"></button><input type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through the animation"><button class="spd" type="button" aria-label="Playback speed">1×</button><span class="tm">0.0 / 0.0 s</span></div></div>
         <figcaption><b>AntMaze-Giant, task 2</b> — goal reached at step 742. Right: the agent's trail, the route the planner committed to at its latest update, the subgoal the controller is steering to (ring), and the route length chosen at every update, which shrinks as the goal gets closer.</figcaption>
       </figure>
       <div class="two">
         <figure>
-          <div class="shot"><img src="media/live_hmg_t3.gif" width="1040" height="460" loading="lazy" alt="HumanoidMaze-Giant task 3: rendered episode next to the top-down map; the route is re-planned every 32 steps and the goal is reached at step 3,254."></div>
+          <div class="player"><video muted playsinline loop preload="metadata" width="1040" height="460" poster="media/video/live_hmg_t3.jpg" aria-label="HumanoidMaze-Giant task 3: rendered episode next to the top-down map; the route is re-planned every 32 steps and the goal is reached at step 3,254."><source src="media/video/live_hmg_t3.mp4" type="video/mp4"></video><div class="ctrl"><button class="pp" type="button" aria-label="Play"></button><input type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through the animation"><button class="spd" type="button" aria-label="Playback speed">1×</button><span class="tm">0.0 / 0.0 s</span></div></div>
           <figcaption><b>HumanoidMaze-Giant, task 3</b> — goal reached at step 3,254 of 4,000.</figcaption>
         </figure>
         <figure>
-          <div class="shot"><img src="media/live_pmg_t4.gif" width="1040" height="460" loading="lazy" alt="PointMaze-Giant task 4: rendered episode next to the top-down map; the goal is reached at step 619."></div>
+          <div class="player"><video muted playsinline loop preload="metadata" width="1040" height="460" poster="media/video/live_pmg_t4.jpg" aria-label="PointMaze-Giant task 4: rendered episode next to the top-down map; the goal is reached at step 619."><source src="media/video/live_pmg_t4.mp4" type="video/mp4"></video><div class="ctrl"><button class="pp" type="button" aria-label="Play"></button><input type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through the animation"><button class="spd" type="button" aria-label="Playback speed">1×</button><span class="tm">0.0 / 0.0 s</span></div></div>
           <figcaption><b>PointMaze-Giant, task 4</b> — goal reached at step 619.</figcaption>
         </figure>
       </div>
@@ -244,5 +257,47 @@ footer{padding-block:40px 56px;text-align:center;font-size:13.5px;color:var(--in
 
 
 
+
+<script>
+/* Scrubbable players: autoplay (muted) while on screen, pause off screen; drag the slider to any moment. */
+(function(){
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
+  var SPEEDS = [1, 2, 0.5];
+  function fmt(t){ return (isFinite(t) ? t : 0).toFixed(1); }
+  document.querySelectorAll(".player").forEach(function(p){
+    var v = p.querySelector("video"), b = p.querySelector(".pp"), r = p.querySelector("input"),
+        tm = p.querySelector(".tm"), sp = p.querySelector(".spd"), dragging = false, wantPlay = !reduce, si = 0;
+    function icon(){ var on = !v.paused; b.innerHTML = on ? PAUSE : PLAY; b.setAttribute("aria-label", on ? "Pause" : "Play"); }
+    function sync(){
+      if (!dragging && v.duration) r.value = Math.round(v.currentTime / v.duration * 1000);
+      tm.textContent = fmt(v.currentTime) + " / " + fmt(v.duration) + " s";
+    }
+    function loop(){ sync(); if (!v.paused) requestAnimationFrame(loop); }
+    v.addEventListener("play", function(){ icon(); requestAnimationFrame(loop); });
+    v.addEventListener("pause", function(){ icon(); sync(); });
+    v.addEventListener("loadedmetadata", sync);
+    v.addEventListener("seeked", sync);
+    function toggle(){ if (v.paused){ wantPlay = true; v.play().catch(function(){}); } else { wantPlay = false; v.pause(); } }
+    b.addEventListener("click", toggle);
+    v.addEventListener("click", toggle);
+    r.addEventListener("input", function(){
+      dragging = true; v.pause();
+      if (v.duration) v.currentTime = r.value / 1000 * v.duration;
+      tm.textContent = fmt(r.value / 1000 * v.duration) + " / " + fmt(v.duration) + " s";
+    });
+    r.addEventListener("change", function(){ dragging = false; wantPlay = false; });
+    sp.addEventListener("click", function(){ si = (si + 1) % SPEEDS.length; v.playbackRate = SPEEDS[si]; sp.textContent = SPEEDS[si] + "\u00d7"; });
+    if ("IntersectionObserver" in window){
+      new IntersectionObserver(function(es){ es.forEach(function(e){
+        if (e.isIntersecting){ if (wantPlay && v.paused) v.play().catch(function(){}); }
+        else if (!v.paused){ v.pause(); }
+      }); }, {threshold: 0.35}).observe(p);
+    } else if (wantPlay){ v.play().catch(function(){}); }
+    icon(); sync();
+  });
+})();
+</script>
 </body>
 </html>
