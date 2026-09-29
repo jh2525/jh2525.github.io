@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="JunHyeok Oh — Integrated M.S./Ph.D. student at Korea University working on reinforcement learning.">
+<meta name="author" content="JunHyeok Oh">
+<link rel="canonical" href="https://jh2525.github.io/">
+<title>JunHyeok Oh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<style>
+/* Same visual system as the HorizonFlow project page (Academic Project Page Template look): Noto Sans, near-black
+   ink on white, grey band, dark pill buttons, one 960px column. Light-only by design, every colour painted. */
+:root{
+  color-scheme:light;
+  --ground:#ffffff; --band:#f5f5f5; --ink:#363636; --ink-strong:#1f1f1f; --ink-2:#6b6b6b; --rule:#e6e6e6;
+  --btn:#363636; --btn-hover:#1f1f1f; --link:#3E78B8; --accent:#3E78B8; --accent-soft:#e8f0fa;
+  --sans:"Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono:"Noto Sans Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;margin:0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.container{max-width:960px;margin:0 auto;padding-inline:20px}
+
+/* ---------- top nav */
+.nav{display:flex;justify-content:space-between;align-items:center;padding-block:18px;border-bottom:1px solid var(--rule)}
+.nav .brand{font-weight:700;color:var(--ink-strong);font-size:17px}
+.nav ul{display:flex;gap:22px;list-style:none;margin:0;padding:0;font-size:15.5px}
+.nav a{color:var(--ink)}
+.nav a[aria-current="page"]{color:var(--ink-strong);font-weight:600}
+
+/* ---------- hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:40px;align-items:start;padding-block:52px 40px}
+.hero h1{font-size:clamp(34px,5vw,46px);font-weight:700;color:var(--ink-strong);line-height:1.1;margin:0 0 10px;letter-spacing:-.01em}
+.role{font-size:18px;color:var(--ink);margin:0 0 4px}
+.contact{font-size:15.5px;color:var(--ink-2);margin:0 0 20px}
+.hero p.bio{margin:0 0 20px;max-width:62ch}
+.photo{width:190px;aspect-ratio:413/531;border-radius:8px;overflow:hidden;background:var(--band)}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.links{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--btn);color:#fff;border-radius:999px;
+  padding:7px 16px;font-size:15px;font-weight:500;line-height:1.2}
+.btn:hover{background:var(--btn-hover);text-decoration:none;color:#fff}
+.btn svg{width:16px;height:16px;fill:currentColor;flex:none}
+@media (max-width:680px){.hero{grid-template-columns:1fr}.photo{width:150px;order:-1}}
+
+/* ---------- sections */
+section{padding-block:40px 8px}
+.band{background:var(--band);padding-block:40px;margin-top:8px}
+h2{font-size:clamp(22px,3vw,27px);font-weight:600;color:var(--ink-strong);margin:0 0 22px;text-wrap:balance}
+.interests{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.interests li{background:#fff;border:1px solid var(--rule);border-radius:999px;padding:4px 14px;font-size:14.5px}
+
+/* ---------- publications */
+.pubs{display:grid;gap:26px;margin:0;padding:0;list-style:none}
+.pub{display:grid;grid-template-columns:200px minmax(0,1fr);gap:22px;align-items:start}
+.thumb{border-radius:6px;overflow:hidden;line-height:0;aspect-ratio:16/9;background:var(--band);border:1px solid var(--rule)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb.contain{background:#fff;padding:8px}
+.thumb.contain img{object-fit:contain}
+.pub h3{font-size:17.5px;font-weight:600;color:var(--ink-strong);margin:0 0 4px;line-height:1.4;text-wrap:balance}
+.pub .au{font-size:15px;margin:0 0 2px}
+.pub .au b{color:var(--ink-strong)}
+.pub .ven{font-size:15px;color:var(--ink-2);margin:0 0 8px;font-style:italic}
+.pub .ven .badge{font-style:normal;font-family:var(--mono);font-size:12.5px;background:var(--accent-soft);color:var(--accent);
+  border-radius:4px;padding:1px 7px;margin-right:6px}
+.pub .tags{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-block;border:1px solid var(--rule);border-radius:999px;padding:2px 12px;font-size:13.5px;color:var(--ink);background:#fff}
+.chip:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+.chip.soon{color:var(--ink-2);background:var(--band)}
+.note{font-size:14px;color:var(--ink-2);margin-top:14px}
+@media (max-width:600px){.pub{grid-template-columns:1fr}.thumb{max-width:320px}}
+
+/* compact list for all publications */
+.all{margin:0;padding:0;list-style:none;display:grid;gap:14px}
+.all li{display:grid;grid-template-columns:4.2em minmax(0,1fr);gap:14px;font-size:15.5px}
+.all .yr{font-family:var(--mono);color:var(--ink-2);font-size:14px;padding-top:2px;font-variant-numeric:tabular-nums}
+.all .t{color:var(--ink-strong);font-weight:500}
+
+/* ---------- timeline rows (education, awards) */
+.rows{margin:0;padding:0;list-style:none;display:grid;gap:16px}
+.rows li{display:grid;grid-template-columns:9em minmax(0,1fr);gap:16px}
+.rows .when{font-family:var(--mono);font-size:14px;color:var(--ink-2);padding-top:2px}
+.rows .what b{color:var(--ink-strong);font-weight:600}
+.rows .what span{display:block;font-size:15px;color:var(--ink-2)}
+@media (max-width:520px){.rows li{grid-template-columns:1fr;gap:2px}}
+footer{padding-block:40px 56px;font-size:13.5px;color:var(--ink-2);border-top:1px solid var(--rule);margin-top:40px}
+</style>
+
+</head>
+<body>
+<div class="container">
+  <nav class="nav" aria-label="Site">
+    <span class="brand">JunHyeok Oh</span>
+    <ul>
+      <li><a href="#about" aria-current="page">About</a></li>
+      <li><a href="#publications">Publications</a></li>
+      <li><a href="#cv">CV</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero" id="about">
+    <div>
+      <h1>JunHyeok Oh</h1>
+      <p class="role">Integrated M.S./Ph.D. Student · <a href="https://www.korea.ac.kr/">Korea University</a></p>
+      <p class="contact">Dept. of Artificial Intelligence, Seoul · the2ndlaw [at] korea.ac.kr</p>
+      <p class="bio">I am an Integrated M.S./Ph.D. student in the Department of Artificial Intelligence at Korea University, advised by Prof. Byung-Jun Lee. My research centers on <b>reinforcement learning</b> — including offline RL, diffusion-based planning, and multi-agent RL — as well as preference optimization and safety for large generative models.</p>
+      <nav class="links" aria-label="Profiles">
+        <a class="btn" href="mailto:the2ndlaw@korea.ac.kr"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm9 7.2L4.4 7H4v.5l8 5.4 8-5.4V7h-.4L12 12.2z"/></svg>Email</a>
+        <a class="btn" href="#cv"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V9h5.5L13 3.5zM8 13h8v1.6H8V13zm0 3.4h8V18H8v-1.6z"/></svg>CV</a>
+        <a class="btn" href="https://scholar.google.com/citations?user=mklwOMMAAAAJ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 1 9l11 6 9-4.9V17h2V9L12 3zm-6.5 9.9V17c0 1.7 2.9 3.5 6.5 3.5s6.5-1.8 6.5-3.5v-4.1L12 16.5l-6.5-3.6z"/></svg>Google Scholar</a>
+        <a class="btn" href="https://github.com/jh2525"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5a10.5 10.5 0 0 0-3.3 20.5c.5.1.7-.2.7-.5v-1.9c-2.9.6-3.5-1.4-3.5-1.4-.5-1.2-1.2-1.5-1.2-1.5-.9-.6.1-.6.1-.6 1 .1 1.6 1.1 1.6 1.1.9 1.6 2.5 1.1 3.1.9.1-.7.4-1.1.7-1.4-2.3-.3-4.8-1.2-4.8-5.2 0-1.1.4-2 1.1-2.8-.1-.3-.5-1.3.1-2.8 0 0 .9-.3 2.9 1.1a10 10 0 0 1 5.3 0c2-1.4 2.9-1.1 2.9-1.1.6 1.5.2 2.5.1 2.8.7.8 1.1 1.7 1.1 2.8 0 4-2.5 4.9-4.8 5.2.4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A10.5 10.5 0 0 0 12 1.5z"/></svg>GitHub</a>
+        <a class="btn" href="https://www.linkedin.com/in/junhyeok-oh-805b4a366"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 3.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM3 9h3v12H3V9zm6 0h2.9v1.7h.1c.4-.8 1.4-1.9 3.2-1.9 3.4 0 4 2.2 4 5.1V21h-3v-6.2c0-1.5 0-3.4-2.1-3.4s-2.4 1.6-2.4 3.3V21H9V9z"/></svg>LinkedIn</a>
+      </nav>
+    </div>
+    <div class="photo"><img src="/assets/img/prof_pic.jpg" width="413" height="531" alt="Portrait of JunHyeok Oh"></div>
+  </header>
+</div>
+
+<div class="band">
+  <div class="container">
+    <h2>Research interests</h2>
+    <ul class="interests">
+      <li>Reinforcement learning</li><li>Offline RL</li><li>Diffusion &amp; flow-based planning</li><li>Multi-agent RL</li><li>LLM alignment</li>
+    </ul>
+  </div>
+</div>
+
+<main class="container">
+  <section id="publications" aria-labelledby="sel">
+    <h2 id="sel">Selected publications</h2>
+    <ul class="pubs">
+      <li class="pub">
+        <div class="thumb"><img src="/HorizonFlow/media/plan_build.gif" width="960" height="430" alt="HorizonFlow route plans growing token by token in a maze, the near goal with fewer tokens than the far goal."></div>
+        <div>
+          <h3>HorizonFlow: Variable-Length Planning for Offline Goal-Conditioned RL</h3>
+          <p class="au"><b>JunHyeok Oh</b>, Zian Jang, Byung-Jun Lee</p>
+          <p class="ven"><span class="badge">Preprint</span>2026</p>
+          <div class="tags">
+            <a class="chip" href="https://jh2525.github.io/HorizonFlow/">Project page</a>
+            <span class="chip soon">arXiv (soon)</span>
+            <span class="chip soon">Code (soon)</span>
+          </div>
+        </div>
+      </li>
+      <li class="pub">
+        <div class="thumb"><img src="/assets/img/publication_preview/tabx.gif" width="400" height="225" alt="TABX battle simulation: two teams of units maneuvering around obstacles in a top-down arena."></div>
+        <div>
+          <h3>TABX: A High-Throughput Sandbox Battle Simulator for Multi-Agent Reinforcement Learning</h3>
+          <p class="au">Hayeong Lee*, <b>JunHyeok Oh*</b>, Byung-Jun Lee</p>
+          <p class="ven"><span class="badge">ICML</span>International Conference on Machine Learning, 2026 · * equal contribution</p>
+          <div class="tags"><a class="chip" href="https://dmlab.korea.ac.kr/tabx_project/">Project page</a><a class="chip" href="https://arxiv.org/abs/2602.01665">arXiv</a></div>
+        </div>
+      </li>
+      <li class="pub">
+        <div class="thumb contain"><img src="/assets/img/publication_preview/ipr.png" width="900" height="263" alt="Iterative Prompt Refinement: a refinement module rewrites the prompt from the previous prompt and generated image, a text-to-image model renders it, and the loop stops with a keep action."></div>
+        <div>
+          <h3>Iterative Prompt Refinement for Safer Text-to-Image Generation</h3>
+          <p class="au">Jinwoo Jeon*, <b>JunHyeok Oh*</b>, Hayeong Lee, Byung-Jun Lee</p>
+          <p class="ven"><span class="badge">EMNLP</span>Conference on Empirical Methods in Natural Language Processing, 2025 · * equal contribution</p>
+          <div class="tags"><a class="chip" href="https://arxiv.org/abs/2509.13760">arXiv</a><a class="chip" href="https://github.com/ku-dmlab/IPR">Code</a></div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="allp">
+    <h2 id="allp">All publications</h2>
+    <ul class="all">
+      <li><span class="yr">2026</span><span><span class="t">HorizonFlow: Variable-Length Planning for Offline Goal-Conditioned RL.</span> <b>JunHyeok Oh</b>, Zian Jang, Byung-Jun Lee. <i>Preprint.</i> <a href="https://jh2525.github.io/HorizonFlow/">Project page</a></span></li>
+      <li><span class="yr">2026</span><span><span class="t">TABX: A High-Throughput Sandbox Battle Simulator for Multi-Agent Reinforcement Learning.</span> Hayeong Lee*, <b>JunHyeok Oh*</b>, Byung-Jun Lee. <i>ICML 2026.</i> <a href="https://dmlab.korea.ac.kr/tabx_project/">Project page</a> · <a href="https://arxiv.org/abs/2602.01665">arXiv</a></span></li>
+      <li><span class="yr">2025</span><span><span class="t">Prior-Guided Diffusion Planning for Offline Reinforcement Learning.</span> Donghyeon Ki, <b>JunHyeok Oh</b>, Seong-Woong Shim, Byung-Jun Lee. <i>NeurIPS 2025.</i> <a href="https://arxiv.org/abs/2505.10881">arXiv</a> · <a href="https://github.com/ku-dmlab/PG">Code</a></span></li>
+      <li><span class="yr">2025</span><span><span class="t">Iterative Prompt Refinement for Safer Text-to-Image Generation.</span> Jinwoo Jeon*, <b>JunHyeok Oh*</b>, Hayeong Lee, Byung-Jun Lee. <i>EMNLP 2025.</i> <a href="https://arxiv.org/abs/2509.13760">arXiv</a> · <a href="https://github.com/ku-dmlab/IPR">Code</a></span></li>
+      <li><span class="yr">2025</span><span><span class="t">Rethinking DPO: The Role of Rejected Responses in Preference Misalignment.</span> Jae Hyeon Cho, <b>JunHyeok Oh</b>, Myunsoo Kim, Byung-Jun Lee. <i>Findings of EMNLP 2025.</i> <a href="https://arxiv.org/abs/2506.12725">arXiv</a></span></li>
+      <li><span class="yr">2025</span><span><span class="t">Offline Reinforcement Learning with Penalized Action Noise Injection.</span> <b>JunHyeok Oh</b>, Byung-Jun Lee. <i>arXiv preprint.</i> <a href="https://arxiv.org/abs/2507.02356">arXiv</a></span></li>
+    </ul>
+    <p class="note">* equal contribution</p>
+  </section>
+
+  <section id="cv" aria-labelledby="edu">
+    <h2 id="edu">Education</h2>
+    <ul class="rows">
+      <li><span class="when">2025 – present</span><span class="what"><b>Korea University</b>, Seoul — Integrated M.S./Ph.D., Artificial Intelligence<span>Advised by Prof. Byung-Jun Lee</span></span></li>
+      <li><span class="when">2020.03 – 2024.02</span><span class="what"><b>Korea National University of Education</b>, Cheongju — B.S., Mathematics Education</span></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="awd">
+    <h2 id="awd">Awards</h2>
+    <ul class="rows">
+      <li><span class="when">2022.10</span><span class="what"><b>3rd Place (Encouragement Award)</b>, Han River Water Level Prediction AI Competition for Paldang Dam Flood Safety Operation<span>Korea Hydro &amp; Nuclear Power (KHNP)</span></span></li>
+    </ul>
+  </section>
+
+  <footer>© 2026 JunHyeok Oh · Last updated September 2026</footer>
+</main>
+
+</body>
+</html>

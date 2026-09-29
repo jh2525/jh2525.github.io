@@ -233,6 +233,7 @@ exclude:
   - package.json
   - package-lock.json
   - _pages/about_einstein.md
+  - _pages/about.md # 2026-09-29: the home page is the static index.html at the repo root
   - purgecss.config.js
   - README.md
   - readme_preview/

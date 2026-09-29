@@ -13,3 +13,5 @@ _scripts/*
 _data/citations.yml
 # HorizonFlow project page (standalone static HTML, not formatted by prettier)
 HorizonFlow/**
+# static home page (same design as the HorizonFlow project page)
+index.html
