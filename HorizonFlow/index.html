@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="HorizonFlow: variable-length planning for offline goal-conditioned RL. Plan length is generated, not prescribed.">
+<meta property="og:title" content="HorizonFlow: Variable-Length Planning for Offline Goal-Conditioned RL">
+<meta property="og:image" content="media/horizon_heatmap.png">
+<title>HorizonFlow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Castoro&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<style>
+/* Layout after the Academic Project Page Template (Nerfies lineage): centred title block, dark pill buttons,
+   teaser, grey abstract band, centred section titles, one column of figures. Deliberately light-only, like the
+   template; every colour is painted explicitly so the page holds on a dark host too. */
+:root{
+  color-scheme:light;
+  --ground:#ffffff; --band:#f5f5f5; --ink:#363636; --ink-strong:#1f1f1f; --ink-2:#6b6b6b; --rule:#e6e6e6;
+  --btn:#363636; --btn-hover:#1f1f1f; --link:#3E78B8; --accent:#3E78B8; --accent-soft:#e8f0fa;
+  --sans:"Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  --serif:"Castoro", Georgia, "Times New Roman", serif;
+  --mono:"Noto Sans Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;margin:0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.container{max-width:960px;margin:0 auto;padding-inline:20px}
+.narrow{max-width:800px;margin:0 auto}
+
+/* ---------- title block */
+.hero{padding-block:64px 32px;text-align:center}
+.title{font-family:var(--sans);font-weight:700;color:var(--ink-strong);font-size:clamp(30px,5vw,46px);
+  line-height:1.15;margin:0 0 20px;text-wrap:balance}
+.title .name{letter-spacing:-.01em}
+.authors{font-size:19px;color:var(--ink);margin:0 0 4px}
+.authors a{color:var(--link)}
+.affil{font-size:17px;color:var(--ink);margin:0 0 4px}
+.venue{font-size:16px;color:var(--ink-2);margin:0 0 22px}
+.venue .corr{margin-left:14px;font-size:14px}
+sup{font-size:.65em;line-height:0}
+.links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--btn);color:#fff;border-radius:999px;
+  padding:8px 18px;font-size:16px;font-weight:500;line-height:1.2}
+.btn:hover{background:var(--btn-hover);text-decoration:none;color:#fff}
+.btn svg{width:17px;height:17px;fill:currentColor;flex:none}
+.btn.soon{background:#9a9a9a;cursor:default}
+
+/* ---------- figures */
+figure{margin:0}
+.teaser{padding-bottom:36px}
+.shot{border-radius:6px;overflow:hidden;line-height:0;background:#fff}
+.shot img{width:100%;height:auto;display:block}
+.subtitle{font-size:17px;color:var(--ink);text-align:center;margin:14px auto 0;max-width:760px;line-height:1.55}
+.subtitle b{color:var(--ink-strong)}
+figcaption{font-size:15px;color:var(--ink-2);line-height:1.55;margin-top:12px;text-align:left}
+figcaption b{color:var(--ink-strong);font-weight:600}
+
+/* ---------- sections */
+.band{background:var(--band);padding-block:44px}
+section.block{padding-block:48px 8px}
+h2{font-family:var(--sans);font-weight:600;color:var(--ink-strong);font-size:clamp(24px,3.4vw,30px);
+  text-align:center;margin:0 0 22px;text-wrap:balance}
+h3{font-family:var(--sans);font-weight:600;color:var(--ink-strong);font-size:20px;margin:30px 0 10px;text-wrap:balance}
+p{margin:0 0 14px}
+.justify{text-align:justify;hyphens:auto}
+.stack{display:grid;gap:36px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;align-items:start}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+
+/* the clock legend: the one term of art the page teaches */
+.clock{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--rule);border-radius:8px;overflow:hidden;
+  font-size:15px;margin:6px 0 18px}
+.clock div{padding:12px 16px}
+.clock div:first-child{background:var(--accent-soft)}
+.clock .t{display:block;font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500}
+@media (max-width:520px){.clock{grid-template-columns:1fr}}
+
+/* ---------- results tables */
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+th,td{padding:9px 14px;text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-weight:600;color:var(--ink-strong);border-bottom:1px solid var(--rule);background:#fafafa}
+tbody tr+tr td{border-top:1px solid var(--rule)}
+td.ours{font-weight:700;color:var(--accent)}
+td.prior small{color:var(--ink-2);font-size:13px;margin-left:6px}
+.note{font-size:14px;color:var(--ink-2);margin-top:10px}
+
+/* ---------- bibtex */
+pre.bib{font-family:var(--mono);font-size:14px;line-height:1.55;background:var(--band);border-radius:6px;
+  padding:18px 20px;overflow-x:auto;margin:0;white-space:pre;color:var(--ink-strong)}
+.copy{margin-top:12px;font:500 14px var(--sans);padding:7px 16px;border-radius:999px;border:1px solid var(--rule);
+  background:#fff;color:var(--ink);cursor:pointer}
+.copy:hover{border-color:var(--accent);color:var(--accent)}
+footer{padding-block:40px 56px;text-align:center;font-size:13.5px;color:var(--ink-2)}
+</style>
+
+</head>
+<body>
+<header class="hero container">
+  <h1 class="title"><span class="name">HorizonFlow</span>: Variable-Length Planning for Offline Goal-Conditioned RL</h1>
+  <p class="authors"><a href="https://jh2525.github.io/">JunHyeok Oh</a><sup>1</sup>, Zian Jang<sup>1</sup>, Byung-Jun Lee<sup>1,&dagger;</sup></p>
+  <p class="affil"><sup>1</sup>Korea University</p>
+  <p class="venue">Preprint <span class="corr">&dagger; Corresponding author</span></p>
+  <nav class="links" aria-label="Paper links">
+    <span class="btn soon" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V9h5.5L13 3.5zM8 13h8v1.6H8V13zm0 3.4h8V18H8v-1.6z"/></svg>arXiv (soon)</span>
+    <span class="btn soon" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6 1.3 12l6 6 1.4-1.4zm6.6 0 4.6-4.6-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4z"/></svg>Code (soon)</span>
+    <span class="btn soon" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-3.5L5 21V4a1 1 0 0 1 1-1z"/></svg>BibTeX (soon)</span>
+  </nav>
+</header>
+
+<div class="container teaser">
+  <figure class="narrow">
+    <div class="shot"><img src="media/plan_build.gif" width="960" height="430" alt="Two route plans on Maze2D-Large growing from only a start and a goal: tokens are inserted until sigma reaches 1, then they only move into place. The near goal ends with 10 tokens, the far goal with 38."></div>
+    <p class="subtitle"><b>HorizonFlow treats plan length as an output of generation.</b> Starting from only the start and goal, tokens are inserted while the generation clock σ is below 1 and refined by flow matching; the near goal settles at 10 tokens, the far one at 38 — no horizon was given.</p>
+  </figure>
+</div>
+
+<div class="band">
+  <section class="container narrow" aria-labelledby="abs">
+    <h2 id="abs">Abstract</h2>
+    <p class="justify">Recent advances in generative planning have made trajectory inpainting a promising approach to offline goal-conditioned reinforcement learning. However, these methods typically specify the planning horizon before generating plan content, even though the appropriate horizon depends on the route itself. A horizon that is too short can force infeasible transitions, whereas one that is too long can introduce redundant motion. We introduce HorizonFlow, a hierarchical planner that treats plan length as an output of generation rather than a prescribed input. Its subgoal route planner guides its action-prefix controller through a sequence of latent subgoals. Both components combine insertion-based generation with flow matching to jointly generate continuous plan content and length, using the partially generated plan to guide token insertion. HorizonFlow reuses the resulting length information to select candidates and steer generation toward shorter plans without a separate learned value model. Across Maze2D, Multi2D, and OGBench navigation and visual manipulation benchmarks, HorizonFlow achieves the highest average performance among the compared methods.</p>
+  </section>
+</div>
+
+<main class="container">
+  <section class="block" aria-labelledby="problem">
+    <h2 id="problem">A prescribed horizon is a guess about travel time</h2>
+    <div class="narrow">
+      <p class="justify">Inpainting planners pin the start and the goal and fill in the plan between them, so the plan length is an assumed travel time chosen before any content exists. Too short, and the plan is squeezed through walls; too long, and it wanders before it arrives.</p>
+    </div>
+    <figure>
+      <div class="shot"><img src="media/horizon_gen.gif" width="760" height="431" loading="lazy" alt="Plans being generated on Maze2D-Large for prescribed horizons 64, 128, 256 and 384 steps. Diffuser and a fixed-length HorizonFlow planner produce wall-crossing plans for the far goal at short horizons and detours for the near goal at long ones; HorizonFlow with generated length reaches both goals the same way at every horizon."></div>
+      <figcaption><b>Generation under a prescribed horizon.</b> For each H = 64 → 128 → 256 → 384 steps, three planners each generate one plan from noise: Diffuser (256 denoising steps, every 8th shown), a fixed-length HorizonFlow planner with the same Transformer but trained without insertion, and HorizonFlow with insertion (20 flow steps). Given H = 64, both fixed-length planners reach the far goal (N* = 320) only by cutting through walls; given H = 384, they detour around the near goal (N* = 64). HorizonFlow ignores H and picks its own number of waypoints, 13 steps apart (3 for the near goal, 27 for the far one). Plans are shown before any controller runs.</figcaption>
+    </figure>
+    <figure style="margin-top:28px">
+      <div class="shot"><img src="media/horizon_heatmap.png" width="1628" height="802" loading="lazy" alt="Heatmaps of score, reach rate and steps to goal over nominal distance. Top row: a fixed-length planner at horizons 64 to 384 loses reach beyond its horizon and takes about H steps below it. Bottom row: HorizonFlow with 1 to 256 candidates reaches 99 to 100 percent at every distance."></div>
+      <figcaption><b>Across 600 start–goal pairs.</b> Maze2D-Large, 100 pairs per distance bin, every plan executed by the same waypoint controller. Top: a fixed-length planner given horizon H (outlined where H matches the distance) fails beyond its own length and wastes time below it. Bottom: HorizonFlow with generated length reaches nearly every goal, and more candidates bring its time to goal down. Darker is better.</figcaption>
+    </figure>
+  </section>
+
+  <section class="block" aria-labelledby="method">
+    <h2 id="method">Insertion and flow matching on one clock</h2>
+    <div class="narrow">
+      <p class="justify">A plan is a set of continuous tokens between two fixed anchors, each with an order coordinate. One Transformer predicts, for every gap between neighbouring tokens, how many tokens are still missing (a hurdle zero-truncated-Poisson head), and for every token a flow-matching velocity. Sampling advances a single clock σ from 0 to 2.</p>
+      <div class="clock" role="group" aria-label="Generation clock">
+        <div><span class="t">0 ≤ σ &lt; 1</span>gaps give birth to new noise tokens while existing ones are refined</div>
+        <div><span class="t">1 ≤ σ ≤ 2</span>the count is fixed; every token finishes its own refinement</div>
+      </div>
+      <p class="justify">At a fixed temporal resolution, the token count is the plan's duration. That makes length a free ranking signal: sample K candidates and keep the one with the fewest tokens, with no learned value function. During generation, Feynman–Kac steering uses the same count heads to move samples toward shorter plans.</p>
+    </div>
+    <div class="stack" style="margin-top:22px">
+      <figure>
+        <div class="shot"><img src="media/candidates.gif" width="840" height="665" loading="lazy" alt="Sixteen of 64 route candidates for one start and goal grow at the same time along different corridors; at the end all but the one with the fewest tokens fade out."></div>
+        <figcaption><b>Best-of-K by count.</b> One sampler call draws 64 route candidates for a start–goal pair with two corridors of equal length; the 16 shown were chosen to cover the different routes in the pool (upper corridor, lower corridor, loops). The candidate with the fewest tokens (n = 14) is kept.</figcaption>
+      </figure>
+      <figure>
+        <div class="shot"><img src="media/fk.gif" width="840" height="420" loading="lazy" alt="Sixteen colour-coded chains generate plans in one maze for a far goal; at two checkpoints a panel shows each chain's predicted length and resampling weight, chains without offspring fade out and survivors are copied, so fewer colours remain; at the end the shortest chain is highlighted."></div>
+        <figcaption><b>Feynman–Kac steering.</b> Sixteen chains for a far goal (N* = 382), one colour per original chain. At σ = 0.3 and 0.7 each chain is scored by its predicted final length n̂ — tokens present plus the tokens the count heads still expect — and resampled with weight ∝ exp(−0.5 n̂). Chains without offspring are dropped and survivors are copied in their place, so the colours thin out and compute moves to short routes before they are finished. Faint strokes are tokens still being refined.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="hier">
+    <h2 id="hier">A route planner for where, a prefix controller for how</h2>
+    <div class="narrow">
+      <p class="justify">Writing a whole route at action resolution means very long sequences, so HorizonFlow applies the same insertion–flow model twice. The <b>route planner</b> generates a variable-length sequence of latent subgoals toward the final goal and is refreshed every half training stride. The <b>action-prefix controller</b> generates a variable-length action prefix toward the first subgoal; it replans every step and executes only the first action. Both pick their candidate by count.</p>
+    </div>
+    <div class="stack" style="margin-top:22px">
+      <figure>
+        <div class="shot"><img src="media/live_antg_t2.gif" width="1040" height="460" loading="lazy" alt="AntMaze-Giant task 2: rendered episode next to a top-down map with the ant's trail and the current route plan, which is replaced every 8 steps and gets shorter as the ant nears the goal. The goal is reached at step 742."></div>
+        <figcaption><b>AntMaze-Giant, task 2</b> — goal reached at step 742. Right: the agent's trail, the route the planner committed to at its latest update, the subgoal the controller is steering to (ring), and the route length chosen at every update, which shrinks as the goal gets closer.</figcaption>
+      </figure>
+      <div class="two">
+        <figure>
+          <div class="shot"><img src="media/live_hmg_t3.gif" width="1040" height="460" loading="lazy" alt="HumanoidMaze-Giant task 3: rendered episode next to the top-down map; the route is re-planned every 32 steps and the goal is reached at step 3,254."></div>
+          <figcaption><b>HumanoidMaze-Giant, task 3</b> — goal reached at step 3,254 of 4,000.</figcaption>
+        </figure>
+        <figure>
+          <div class="shot"><img src="media/live_pmg_t4.gif" width="1040" height="460" loading="lazy" alt="PointMaze-Giant task 4: rendered episode next to the top-down map; the goal is reached at step 619."></div>
+          <figcaption><b>PointMaze-Giant, task 4</b> — goal reached at step 619.</figcaption>
+        </figure>
+      </div>
+      <p class="note">Benchmark recipe (K = 16 routes × 4 prefixes, FK at both levels). Each clip plays a whole episode in 10 seconds. Latent subgoals are drawn at the mean position of their 8 nearest dataset states in the planner's latent space; counts exclude the start and goal anchors. Clips are successful episodes picked from 16 rendered episodes, 14 of which succeeded.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="results">
+    <h2 id="results">Results</h2>
+    <div class="narrow">
+      <p class="justify">HorizonFlow attains the highest average in every benchmark group, with the largest margins in long-horizon environments — 95.5% on HumanoidMaze-Giant against 35% for the best prior method.</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Benchmark</th><th>Metric</th><th>Best prior method</th><th>HorizonFlow</th></tr></thead>
+          <tbody>
+            <tr><td>Maze2D (single goal), 3 mazes</td><td>normalized score</td><td class="prior">154.2<small>SSD</small></td><td class="ours">165.8</td></tr>
+            <tr><td>Multi2D (goal resampled), 3 mazes</td><td>normalized score</td><td class="prior">168.8<small>SSD</small></td><td class="ours">177.4</td></tr>
+            <tr><td>OGBench navigation, 9 mazes</td><td>success %</td><td class="prior">75.4<small>SAW</small></td><td class="ours">94.2</td></tr>
+            <tr><td>OGBench visual manipulation, 4 tasks</td><td>success %</td><td class="prior">49.5<small>HIQL</small></td><td class="ours">55.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Averages over each group's environments. HorizonFlow uses 5, 8 and 4 training seeds for Maze2D/Multi2D, navigation and visual manipulation; 250 problems per OGBench environment (50 per task). Per-environment numbers and all baselines are in the paper's Table 1.</p>
+
+      <h3>Does the generated count know the distance?</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Length signal (2,400 Maze2D-Large pairs)</th><th>Spearman ρ with N*</th><th>ρ on pairs with N* ≥ 300</th></tr></thead>
+          <tbody>
+            <tr><td>VH-Diffuser predicted length</td><td>0.653</td><td>0.070</td></tr>
+            <tr><td>HIQL value-derived length</td><td>0.924</td><td>0.371</td></tr>
+            <tr><td>HorizonFlow generated count</td><td class="ours">0.954</td><td class="ours">0.617</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Both levels matter</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Architecture (OGBench navigation)</th><th>Average success %</th></tr></thead>
+          <tbody>
+            <tr><td>Flat planner (no route planner)</td><td>42.9</td></tr>
+            <tr><td>Route planner + behavior-cloning controller</td><td>67.8</td></tr>
+            <tr><td>Route planner + prefix controller (HorizonFlow)</td><td class="ours">94.2</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">About 8.5 ms of model computation per environment step at the default settings (RTX 5090).</p>
+    </div>
+  </section>
+
+  <section class="block" id="bibtex" aria-labelledby="bib-h">
+    <h2 id="bib-h">BibTeX</h2>
+    <div class="narrow">
+      <p class="note" style="text-align:center">The BibTeX entry will be posted here with the arXiv preprint.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="container">Page layout follows the Academic Project Page Template (adapted from Nerfies).</footer>
+
+
+
+</body>
+</html>
