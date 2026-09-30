@@ -38,9 +38,10 @@ cv:
           - "**JunHyeok Oh**"
           - Zian Jang
           - Byung-Jun Lee
-        publisher: Preprint
+        publisher: arXiv preprint
         releaseDate: 2026
-        url: https://jh2525.github.io/HorizonFlow/
+        url: https://arxiv.org/abs/2609.36896
+        summary: "Project page: https://jh2525.github.io/HorizonFlow/"
 
       - title: "TABX: A High-Throughput Sandbox Battle Simulator for Multi-Agent Reinforcement Learning"
         authors:
