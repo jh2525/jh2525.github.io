@@ -1,0 +1,300 @@
+<title>StreamStop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<style>
+/* DRAFT 2026-10-14. Layout copied from the HorizonFlow project page (Academic Project Page Template / Nerfies lineage):
+   centred title block, dark pill buttons, teaser, grey abstract band, centred section titles, one column of figures.
+   Deliberately light-only like that page; every colour is painted explicitly so it holds on a dark host too.
+   Items marked TODO in the HTML comments need the author's confirmation (title, author list, links, BibTeX). */
+:root{
+  color-scheme:light;
+  --ground:#ffffff; --band:#f5f5f5; --ink:#363636; --ink-strong:#1f1f1f; --ink-2:#6b6b6b; --rule:#e6e6e6;
+  --btn:#363636; --btn-hover:#1f1f1f; --link:#3E78B8; --accent:#3F72AE; --accent-soft:#e8f0fa;
+  --wait:#3F72AE; --stop:#B03A2E;
+  --sans:"Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono:"Noto Sans Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;margin:0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.container{max-width:960px;margin:0 auto;padding-inline:20px}
+.narrow{max-width:800px;margin:0 auto}
+
+/* ---------- title block */
+.hero{padding-block:64px 32px;text-align:center}
+.title{font-family:var(--sans);font-weight:700;color:var(--ink-strong);font-size:clamp(30px,5vw,46px);
+  line-height:1.15;margin:0 0 20px;text-wrap:balance}
+.title .name{letter-spacing:-.01em}
+.authors{font-size:19px;color:var(--ink);margin:0 0 4px}
+.authors a{color:var(--link)}
+.affil{font-size:17px;color:var(--ink);margin:0 0 4px}
+.venue{font-size:16px;color:var(--ink-2);margin:0 0 22px}
+.venue .corr{margin-left:14px;font-size:14px}
+sup{font-size:.65em;line-height:0}
+.links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--btn);color:#fff;border-radius:999px;
+  padding:8px 18px;font-size:16px;font-weight:500;line-height:1.2}
+.btn:hover{background:var(--btn-hover);text-decoration:none;color:#fff}
+.btn svg{width:17px;height:17px;fill:currentColor;flex:none}
+.btn.soon{background:#9a9a9a;cursor:default}
+
+/* ---------- figures */
+figure{margin:0}
+.teaser{padding-bottom:36px}
+.shot{border-radius:6px;overflow:hidden;line-height:0;background:#fff}
+.shot img{width:100%;height:auto;display:block;max-width:100%}
+.shot.pad{padding:10px 12px}
+.subtitle{font-size:17px;color:var(--ink);text-align:center;margin:14px auto 0;max-width:760px;line-height:1.55}
+.subtitle b{color:var(--ink-strong)}
+figcaption{font-size:15px;color:var(--ink-2);line-height:1.55;margin-top:12px;text-align:left}
+figcaption b{color:var(--ink-strong);font-weight:600}
+.col{max-width:520px;margin:0 auto}
+
+/* ---------- sections */
+.band{background:var(--band);padding-block:44px}
+section.block{padding-block:48px 8px}
+h2{font-family:var(--sans);font-weight:600;color:var(--ink-strong);font-size:clamp(24px,3.4vw,30px);
+  text-align:center;margin:0 0 22px;text-wrap:balance}
+h3{font-family:var(--sans);font-weight:600;color:var(--ink-strong);font-size:20px;margin:30px 0 10px;text-wrap:balance}
+p{margin:0 0 14px}
+.justify{text-align:justify;hyphens:auto}
+.stack{display:grid;gap:36px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;align-items:start}
+.two>*{min-width:0}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+
+/* the decision legend: the one rule the page teaches */
+.clock{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--rule);border-radius:8px;overflow:hidden;
+  font-size:15px;margin:6px 0 18px}
+.clock div{padding:12px 16px}
+.clock div:first-child{background:var(--accent-soft)}
+.clock .t{display:block;font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500}
+.clock div:last-child .t{color:var(--stop)}
+@media (max-width:520px){.clock{grid-template-columns:1fr}}
+.eq{font-family:var(--mono);font-size:15px;background:var(--band);border-radius:6px;padding:10px 14px;margin:8px 0 14px;
+  overflow-x:auto;white-space:nowrap;color:var(--ink-strong)}
+
+/* ---------- results tables */
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+th,td{padding:9px 14px;text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-weight:600;color:var(--ink-strong);border-bottom:1px solid var(--rule);background:#fafafa}
+tbody tr+tr td{border-top:1px solid var(--rule)}
+td.ours{font-weight:600;color:var(--accent)}
+td.best{text-decoration:underline;text-underline-offset:3px}
+.cmp table{font-size:14px}
+.cmp th,.cmp td{padding:7px 9px}
+.cmp thead th{line-height:1.25}
+tr.ref td{color:var(--ink-2);font-style:italic}
+thead th{text-align:center}
+thead th:first-child{text-align:left}
+td small,th small{color:var(--ink-2);font-size:13px;font-weight:400}
+.note{font-size:14px;color:var(--ink-2);margin-top:10px}
+
+footer{padding-block:40px 56px;text-align:center;font-size:13.5px;color:var(--ink-2)}
+
+/* ---------- equations (MathJax SVG output) */
+.eqn{margin:6px 0 14px;overflow-x:auto;font-size:17px}
+mjx-container[display="true"]{margin:10px 0 !important}
+
+/* ---------- scrubbable video players (same as the HorizonFlow page) */
+.player{position:relative;border-radius:6px;overflow:hidden;background:#fff;line-height:0;border:1px solid var(--rule)}
+.player video{width:100%;height:auto;display:block;cursor:pointer}
+.ctrl{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#fafafa;border-top:1px solid var(--rule);line-height:1}
+.ctrl button{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:999px;border:0;background:var(--btn);color:#fff;cursor:pointer}
+.ctrl button:hover{background:var(--btn-hover)}
+.ctrl button svg{width:14px;height:14px;fill:currentColor}
+.ctrl .spd{width:auto;padding:0 10px;font:600 12.5px var(--mono);background:#fff;color:var(--ink);border:1px solid var(--rule)}
+.ctrl .spd:hover{background:#fff;border-color:var(--accent);color:var(--accent)}
+.ctrl input[type=range]{flex:1;min-width:60px;accent-color:var(--accent);height:22px;margin:0;cursor:pointer}
+.ctrl .tm{flex:none;font:500 12.5px var(--mono);color:var(--ink-2);font-variant-numeric:tabular-nums;min-width:8.4em;text-align:right}
+@media (max-width:520px){.ctrl .tm{display:none}}
+</style>
+<script>
+window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']]}, svg: {fontCache: 'global'}};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js"></script>
+
+<header class="hero container">
+  <!-- TODO(author): confirm the exact paper title. Placeholder below is built from the abstract wording. -->
+  <h1 class="title"><span class="name">StreamStop</span>: Learning When to Stop Reasoning from Prefix-Level Action Agreement</h1>
+  <!-- Author block follows the arXiv copy as decided 2026-10-14: two authors, Korea University only, no corresponding-author mark. -->
+  <p class="authors"><a href="https://jh2525.github.io/">JunHyeok Oh</a>, <a href="https://scholar.google.com/citations?user=FwoohI4AAAAJ&amp;hl=en">Byung-Jun Lee</a></p>
+  <p class="affil">Korea University</p>
+  <p class="venue">arXiv preprint</p>
+  <nav class="links" aria-label="Paper links">
+    <!-- TODO(author): replace with the arXiv id once the preprint is live. -->
+    <span class="btn soon" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V9h5.5L13 3.5zM8 13h8v1.6H8V13zm0 3.4h8V18H8v-1.6z"/></svg>arXiv (soon)</span>
+    <span class="btn soon" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6 1.3 12l6 6 1.4-1.4zm6.6 0 4.6-4.6-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4z"/></svg>Code (soon)</span>
+    <span class="btn soon" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C7 2 3 3.6 3 5.5v13C3 20.4 7 22 12 22s9-1.6 9-3.5v-13C21 3.6 17 2 12 2zm0 2c4.4 0 7 1.3 7 1.5S16.4 7 12 7 5 5.7 5 5.5 7.6 4 12 4zm7 14.5c0 .2-2.6 1.5-7 1.5s-7-1.3-7-1.5V15c1.6.9 4.2 1.5 7 1.5s5.4-.6 7-1.5v3.5zm0-6c0 .2-2.6 1.5-7 1.5s-7-1.3-7-1.5V9c1.6.9 4.2 1.5 7 1.5s5.4-.6 7-1.5v3.5z"/></svg>Dataset (soon)</span>
+    <span class="btn soon" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-3.5L5 21V4a1 1 0 0 1 1-1z"/></svg>BibTeX (soon)</span>
+  </nav>
+</header>
+
+<div class="container teaser">
+  <figure>
+    <div class="player"><video muted playsinline loop preload="metadata" width="1280" height="720" poster="media/video/race_webshop_1716.jpg" aria-label="Three WebShop browser windows side by side, each run by Qwen3.8-27B on the same shopping task with a different stopping rule, replayed on one shared clock: Full thinking, a fixed 352-token budget and StreamStop. Each window shows the real page the agent is on, how many reasoning tokens it is generating for the current decision, and a time track. StreamStop buys the right item in 18.7 seconds, the fixed budget in 43.3 seconds, Full thinking in 102.9 seconds."><source src="media/video/race_webshop_1716.mp4" type="video/mp4"></video><div class="ctrl"><button class="pp" type="button" aria-label="Play"></button><input type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through the animation"><button class="spd" type="button" aria-label="Playback speed">1×</button><span class="tm">0.0 / 0.0 s</span></div></div>
+    <p class="subtitle"><b>Same task, same reasoning model, one clock.</b> Qwen3.8-27B shops for the same item under three stopping rules, replayed in the real WebShop environment with the paper's H200 timing. Full thinking reads every reasoning token and arrives in 103 s; a fixed budget matched to StreamStop's token use takes 43 s; StreamStop stops each decision as soon as the reasoning has settled and buys the right item in 19 s.</p>
+  </figure>
+</div>
+
+<div class="band">
+  <section class="container narrow" aria-labelledby="abs">
+    <h2 id="abs">Abstract</h2>
+    <p class="justify">Reasoning-enabled language model agents can incur substantial computation before acting, even though the amount of reasoning needed varies across decisions. Existing adaptive stopping methods use proxy signals such as confidence or intermediate-answer stability, whose effectiveness can vary across reasoning models. We introduce StreamStop, which learns when to stop from prefix-level action agreement using the available reasoning text. A frozen prefix reader supplies features to a lightweight stop head, while the reasoning model generates the action after stopping. We train the stop head with a discounted action-agreement objective and compute its expected return exactly over stopping times on recorded trajectories. Conditioning on the discount factor enables a single policy to support different trade-offs between reasoning consumption and action agreement. StreamStop keeps both language models frozen and requires no access to the reasoning model's internal states. We also construct a dataset of agent reasoning trajectories with prefix-level action annotations for offline evaluation of stopping decisions. In closed-loop evaluations on WebShop and ScienceWorld, StreamStop generally improves task success over matched fixed-budget stopping while consuming fewer reasoning tokens than Full thinking. On WebShop with Qwen3.8-27B, it uses 42% fewer reasoning tokens per episode with similar observed task success.</p>
+  </section>
+</div>
+
+<main class="container">
+  <section class="block" aria-labelledby="problem">
+    <h2 id="problem">How much reasoning does one decision need?</h2>
+    <div class="narrow">
+      <p class="justify">An agent reasons before every action, and the reasoning it needs varies from decision to decision. A fixed thinking budget is therefore a guess: too short, and the action changes; too long, and the agent spends tokens and seconds that do not change what it does. The right question is not how long the model reasons on average but at which point of <i>this</i> reasoning stream the action is already settled.</p>
+    </div>
+    <figure style="margin-top:22px">
+      <div class="shot"><img src="media/motivation.png" width="1818" height="654" loading="lazy" alt="Panel (a): action agreement with the full-reasoning action as a function of the number of thinking tokens read, for a 1.7B prefix reader and for the 27B reasoning model forced to answer at that point. Panel (b): cumulative distribution over decisions of the sufficient prefix length for the reader and for the reasoning model, together with the full reasoning length."></div>
+      <figcaption><b>Where a decision settles.</b> WebShop validation decisions with Qwen3.8-27B as the reasoning model. (a) Agreement with the full-reasoning action after reading the first <i>k</i> thinking tokens, for a small prefix reader (Qwen3-1.7B, scoring the valid candidate actions) and for the reasoning model itself forced to answer at <i>k</i>. (b) Cumulative distribution of the sufficient prefix, the earliest prefix after which every later action agrees with the reference, against the full reasoning length. Thinking-token axes are logarithmic.</figcaption>
+    </figure>
+  </section>
+
+  <section class="block" aria-labelledby="method">
+    <h2 id="method">A small reader decides when the reasoning is enough</h2>
+    <div class="narrow">
+      <p class="justify">The reasoning model \(\mathcal M\) streams its reasoning in chunks. After each chunk a frozen prefix reader \(\mathcal R\) encodes the prefix read so far, and a lightweight stop head \(\pi_\theta\), conditioned on a discount factor \(\gamma\), makes one binary call:</p>
+      <div class="clock" role="group" aria-label="Stop-head decision">
+        <div><span class="t">WAIT</span>receive the next reasoning chunk and read again</div>
+        <div><span class="t">STOP</span>\(\mathcal M\) acts from the prefix it has so far; the rest of the reasoning is never produced</div>
+      </div>
+      <p class="justify">The head is trained offline, with no rollouts and no gradients through either language model. Every prefix \(t\) of a recorded trajectory \(\xi\) is labelled with whether the action generated from it agrees with the full-reasoning action, \(y_t\in\{0,1\}\), and the discounted agreement of a stopping policy is summed <i>exactly</i> over the finitely many stopping times, with \(q_t\) the probability of first stopping at prefix \(t\):</p>
+      <div class="eqn">\[ J(\theta \mid \xi, \gamma) = \sum_{t=0}^{T} q_t\, \gamma^{e_t}\, y_t, \qquad e_t = t+1 . \]</div>
+      <p class="justify">\(\gamma\) is an input, not a hyperparameter: one head trained with \(\gamma\) sampled from a range covers a whole family of trade-offs, and at deployment the choice is a single number. Lower \(\gamma\) stops earlier; higher \(\gamma\) waits for more agreement.</p>
+    </div>
+    <figure style="margin-top:22px">
+      <div class="shot pad"><img src="media/overview.png" width="2400" height="1135" loading="lazy" alt="Left: during agent interaction the frozen reasoning model streams reasoning chunks; a frozen prefix reader encodes the public context and the available prefix into features; a trainable stop head conditioned on the discount factor outputs WAIT or STOP; on STOP the reasoning model generates the action from the current prefix. Right: on a recorded trajectory every prefix is annotated with whether its action agrees with the full-reasoning reference action, and the stop head is trained on the exact expected discounted agreement over stopping times."></div>
+      <figcaption><b>StreamStop at a glance.</b> (a) Inference: reasoning model, prefix reader and stop head during one decision. (b) Training: recorded trajectories with per-prefix agreement labels, the exact expected return over stopping times, and one γ-conditioned policy for different trade-offs.</figcaption>
+    </figure>
+    <figure style="margin-top:28px">
+      <div class="shot"><img src="media/validation.png" width="2204" height="595" loading="lazy" alt="Four panels of action agreement against reasoning tokens per decision on validation decisions: WebShop with Qwen3.8 and with Nemotron, ScienceWorld with Qwen3.8 and with Gemini. StreamStop at a sweep of discount factors is compared with constant budgets, EAT settings, a Dynasor-CoT sweep, no thinking and full thinking."></div>
+      <figcaption><b>One head, a whole frontier.</b> Validation action agreement against reasoning tokens per decision for four environment and reasoning-model pairs. The StreamStop curve is a single stop head swept over γ; Const-<i>k</i> stops after <i>k</i> tokens; EAT and Dynasor-CoT are swept over their own settings. For Gemini 3.1 Flash-Lite the observable explicit plan stands in for the hidden native reasoning.</figcaption>
+    </figure>
+  </section>
+
+  <section class="block" aria-labelledby="results">
+    <h2 id="results">Results</h2>
+    <div class="narrow">
+      <p class="justify">Closed-loop task success on the test sets against the existing stopping rules. The proxy-signal methods rank differently from one reasoning model to the next: EAT is strong on Gemini and weak on Qwen3.8, Dynasor-CoT the other way round on Nemotron. StreamStop stays within three points of Full thinking in every configuration while reading 18&ndash;52% fewer reasoning tokens, and on WebShop it beats every other stopping rule by a wide margin.</p>
+    </div>
+    <div class="tablewrap cmp" style="margin-top:18px">
+      <table>
+        <thead>
+          <tr><th rowspan="2">Method</th><th colspan="2">WebShop<br>Qwen3.8-27B</th><th colspan="2">WebShop<br>Nemotron-30B</th><th colspan="2">ScienceWorld<br>Qwen3.8-27B</th><th colspan="2">ScienceWorld<br>Gemini 3.1 FL</th></tr>
+          <tr><th>success %</th><th>tok/ep</th><th>success %</th><th>tok/ep</th><th>success %</th><th>tok/ep</th><th>success %</th><th>tok/ep</th></tr>
+        </thead>
+        <tbody>
+          <tr class="ref"><td>Full thinking (reference)</td><td>43.0</td><td>5,945</td><td>34.5</td><td>5,374</td><td>52.1</td><td>45,380</td><td>47.1</td><td>10,980</td></tr>
+          <tr><td>No thinking</td><td>13.2</td><td>0</td><td>18.3</td><td>0</td><td>32.0</td><td>0</td><td>39.9</td><td>0</td></tr>
+          <tr><td>Const-M (matched budget)</td><td>35.7</td><td>2,119</td><td>32.5</td><td>1,599</td><td class="best">50.1</td><td>12,562</td><td>45.4</td><td>6,500</td></tr>
+          <tr><td>EAT</td><td>33.2</td><td>2,369</td><td>29.5</td><td>2,035</td><td>48.8</td><td>15,095</td><td class="best">49.2</td><td>8,596</td></tr>
+          <tr><td>Dynasor-CoT</td><td>31.7</td><td>2,082</td><td>36.2</td><td>2,338</td><td>48.1</td><td>17,868</td><td>44.6</td><td>7,718</td></tr>
+          <tr><td class="ours">StreamStop, γ = 0.98</td><td class="ours">40.3</td><td class="ours">2,675</td><td class="ours">35.5</td><td class="ours">2,693</td><td class="ours">49.2</td><td class="ours">20,757</td><td class="ours">47.1</td><td class="ours">8,757</td></tr>
+          <tr><td class="ours">StreamStop, γ = 0.99</td><td class="ours best">42.8</td><td class="ours">3,464</td><td class="ours best">36.3</td><td class="ours">3,263</td><td class="ours">49.2</td><td class="ours">21,665</td><td class="ours">46.1</td><td class="ours">8,977</td></tr>
+          <tr><td class="ours">StreamStop, γ = 0.995</td><td class="ours">41.8</td><td class="ours">4,540</td><td class="ours">37.0</td><td class="ours">3,727</td><td class="ours best">50.8</td><td class="ours">23,680</td><td class="ours">47.0</td><td class="ours">9,183</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Test-set means over three evaluation seeds (Gemini: eight). tok/ep = reasoning tokens per episode; for Gemini they are explicit-plan tokens in reader-token units. Underlined: best success among the stopping rules (Full thinking excluded). Const-M stops after a per-setting token count chosen on the validation set to match StreamStop's mean consumption at γ = 0.99; EAT and Dynasor-CoT use one setting across all environments. Standard deviations across seeds and the remaining baseline settings are in the paper's Table 2.</p>
+
+    <div class="narrow">
+      <h3>Fewer tokens is also less time</h3>
+    </div>
+    <figure style="margin-top:12px">
+      <div class="shot"><img src="media/latency.png" width="2204" height="661" loading="lazy" alt="Panels (a) to (c): success rate against estimated seconds per decision for WebShop with Qwen3.8, WebShop with Nemotron and ScienceWorld with Qwen3.8, comparing StreamStop at three discount factors with constant budgets, EAT, Dynasor-CoT, no thinking and full thinking. Panel (d): box summaries of the reader update time and the reasoning chunk interval in milliseconds."></div>
+      <figcaption><b>Success against seconds per decision.</b> (a&ndash;c) Test success (95% Wilson intervals) against the per-decision latency estimated from the recorded token counts with H200 timing. (d) Measured reader update time and reasoning chunk interval (box: interquartile range, line: median, whiskers: 10th&ndash;90th percentile). The reader runs in parallel with generation and adds under 2% to the decision latency in every setting.</figcaption>
+    </figure>
+
+    <div class="narrow">
+      <h3>Fast is not the same as right</h3>
+      <p class="justify">Stopping early is only useful if the action survives. In the episode below the fixed budget stops after 352 tokens every time and buys the wrong shirt in 32 s; StreamStop keeps reading when the reasoning is still undecided and spends 102 s, but buys the right one, as Full thinking does in 246 s.</p>
+    </div>
+    <figure style="margin-top:12px">
+      <div class="player"><video muted playsinline loop preload="metadata" width="1280" height="720" poster="media/video/race_webshop_4042.jpg" aria-label="Three WebShop browser windows on the same shopping task under Full thinking, a fixed 352-token budget and StreamStop, on one shared clock. The fixed budget buys a wrong item after 32 seconds; StreamStop and Full thinking buy the right item after 102 and 246 seconds."><source src="media/video/race_webshop_4042.mp4" type="video/mp4"></video><div class="ctrl"><button class="pp" type="button" aria-label="Play"></button><input type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through the animation"><button class="spd" type="button" aria-label="Playback speed">1×</button><span class="tm">0.0 / 0.0 s</span></div></div>
+      <figcaption><b>A harder task.</b> Test episode on WebShop with Qwen3.8-27B, replayed in the real environment. Each window shows the page the run is on, the reasoning tokens generated for the current decision, the running token total and a time track (dark = reasoning tokens being generated, tick = an action). Seconds per decision follow the paper's H200 timing model applied to the recorded token counts; environment time is the recorded one.</figcaption>
+    </figure>
+
+    <div class="narrow">
+      <h3>What the stop head reads</h3>
+      <p class="justify">The head's stop probability stays near zero through exploration and rises once the reasoning has committed to a plan. Below, two validation decisions in WebShop: the full reasoning is shown with the stop probability after each chunk as shading, and the point at which each method stops is marked with the action it then takes.</p>
+    </div>
+    <figure style="margin-top:12px">
+      <div class="shot pad"><img src="media/qualitative.png" width="2520" height="1614" loading="lazy" alt="Two WebShop reasoning streams rendered as text with blue shading for the stop probability after each chunk; the StreamStop, Dynasor-CoT, Const-M and EAT-proxy cutoffs are marked, and under each stream the action chosen at each cutoff is listed with a check or cross for agreement with the full-reasoning action."></div>
+      <figcaption><b>Two decisions, chunk by chunk.</b> Qwen3.8-27B on WebShop, γ = 0.99. Shading is the stop probability after each reasoning chunk on a log scale (stopping threshold 0.5); the labelled boxes mark where StreamStop, Dynasor-CoT, Const-M and EAT-proxy stop, and the line under each stream gives the action generated at that cutoff, with ✓ / ✗ for agreement with the full-reasoning action. In (a) StreamStop stops once the prefix proposes inspecting a hoodie within the price limit; in (b) it waits through a tentative size choice until the prefix decides to go back to search.</figcaption>
+    </figure>
+  </section>
+
+  <section class="block" aria-labelledby="data">
+    <h2 id="data">A dataset of reasoning prefixes with their actions</h2>
+    <div class="narrow">
+      <p class="justify">Training and evaluating a stopping rule offline needs something ordinary agent logs do not have: the action the model <i>would</i> have taken from each earlier prefix. We recorded it. For every reasoning stream in the collection, the reasoning model was asked to act from a grid of prefix lengths, so stopping rules can be compared on agreement and tokens without any new generation or environment rollout.</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Collection (training and validation tasks, four environment–model pairs)</th><th>Count</th></tr></thead>
+          <tbody>
+            <tr><td>Episodes</td><td>11,194</td></tr>
+            <tr><td>Non-empty reasoning streams (decision attempts)</td><td>123,819</td></tr>
+            <tr><td>Prefix-action annotations</td><td class="ours">2,096,816</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Unsuccessful episodes and invalid action responses are kept. Each record carries the task and public context, the full reasoning text, the full-reasoning action, and per-prefix generated actions with parser results. The release is planned together with the code.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="container">Page layout follows the Academic Project Page Template (adapted from Nerfies).</footer>
+
+<script>
+/* Scrubbable players: autoplay (muted) while on screen, pause off screen; drag the slider to any moment. */
+(function(){
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
+  var SPEEDS = [1, 2, 0.5];
+  function fmt(t){ return (isFinite(t) ? t : 0).toFixed(1); }
+  document.querySelectorAll(".player").forEach(function(p){
+    var v = p.querySelector("video"), b = p.querySelector(".pp"), r = p.querySelector("input"),
+        tm = p.querySelector(".tm"), sp = p.querySelector(".spd"), dragging = false, wantPlay = !reduce, si = 0;
+    function icon(){ var on = !v.paused; b.innerHTML = on ? PAUSE : PLAY; b.setAttribute("aria-label", on ? "Pause" : "Play"); }
+    function sync(){
+      if (!dragging && v.duration) r.value = Math.round(v.currentTime / v.duration * 1000);
+      tm.textContent = fmt(v.currentTime) + " / " + fmt(v.duration) + " s";
+    }
+    function loop(){ sync(); if (!v.paused) requestAnimationFrame(loop); }
+    v.addEventListener("play", function(){ icon(); requestAnimationFrame(loop); });
+    v.addEventListener("pause", function(){ icon(); sync(); });
+    v.addEventListener("loadedmetadata", sync);
+    v.addEventListener("seeked", sync);
+    function toggle(){ if (v.paused){ wantPlay = true; v.play().catch(function(){}); } else { wantPlay = false; v.pause(); } }
+    b.addEventListener("click", toggle);
+    v.addEventListener("click", toggle);
+    r.addEventListener("input", function(){
+      dragging = true; v.pause();
+      if (v.duration) v.currentTime = r.value / 1000 * v.duration;
+      tm.textContent = fmt(r.value / 1000 * v.duration) + " / " + fmt(v.duration) + " s";
+    });
+    r.addEventListener("change", function(){ dragging = false; wantPlay = false; });
+    sp.addEventListener("click", function(){ si = (si + 1) % SPEEDS.length; v.playbackRate = SPEEDS[si]; sp.textContent = SPEEDS[si] + "×"; });
+    if ("IntersectionObserver" in window){
+      new IntersectionObserver(function(es){ es.forEach(function(e){
+        if (e.isIntersecting){ if (wantPlay && v.paused) v.play().catch(function(){}); }
+        else if (!v.paused){ v.pause(); }
+      }); }, {threshold: 0.35}).observe(p);
+    } else if (wantPlay){ v.play().catch(function(){}); }
+    icon(); sync();
+  });
+})();
+</script>

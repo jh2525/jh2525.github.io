@@ -33,6 +33,15 @@ cv:
         end_date: 2024-02
 
     Publications:
+      - title: "StreamStop: Learning When to Stop Reasoning from Prefix-Level Action Agreement"
+        authors:
+          - "**JunHyeok Oh**"
+          - Byung-Jun Lee
+        publisher: Preprint, under review
+        releaseDate: 2026
+        url: https://jh2525.github.io/StreamStop/
+        summary: "Project page: https://jh2525.github.io/StreamStop/"
+
       - title: "HorizonFlow: Variable-Length Planning for Offline Goal-Conditioned RL"
         authors:
           - "**JunHyeok Oh**"
