@@ -33,7 +33,7 @@ cv:
         end_date: 2024-02
 
     Publications:
-      - title: "StreamStop: Learning When to Stop Reasoning from Prefix-Level Action Agreement"
+      - title: "Adaptive Stopping of Streamed Reasoning for Language Model Agents"
         authors:
           - "**JunHyeok Oh**"
           - Byung-Jun Lee
