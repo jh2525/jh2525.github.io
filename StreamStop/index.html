@@ -169,7 +169,7 @@ window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]
         <div><span class="t">STOP</span>\(\mathcal M\) acts from the prefix it has so far; the rest of the reasoning is never produced</div>
       </div>
       <p class="justify">The head is trained offline, with no rollouts and no gradients through either language model. Every prefix \(t\) of a recorded trajectory \(\xi\) is labelled with whether the action generated from it agrees with the full-reasoning action, \(y_t\in\{0,1\}\), and the discounted agreement of a stopping policy is summed <i>exactly</i> over the finitely many stopping times, with \(q_t\) the probability of first stopping at prefix \(t\):</p>
-      <div class="eqn">\[ J(\theta \mid \xi, \gamma) = \sum_{t=0}^{T} q_t\, \gamma^{e_t}\, y_t, \qquad e_t = t+1 . \]</div>
+      <div class="eqn">\[ J(\theta \mid \xi, \gamma) = \sum_{t=0}^{T} q_t\, \gamma^{t}\, y_t . \]</div>
       <p class="justify">\(\gamma\) is an input, not a hyperparameter: one head trained with \(\gamma\) sampled from a range covers a whole family of trade-offs, and at deployment the choice is a single number. Lower \(\gamma\) stops earlier; higher \(\gamma\) waits for more agreement.</p>
     </div>
     <figure style="margin-top:22px">
