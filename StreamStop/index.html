@@ -1,3 +1,6 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>StreamStop</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6,7 +9,7 @@
 /* DRAFT 2026-10-14. Layout copied from the HorizonFlow project page (Academic Project Page Template / Nerfies lineage):
    centred title block, dark pill buttons, teaser, grey abstract band, centred section titles, one column of figures.
    Deliberately light-only like that page; every colour is painted explicitly so it holds on a dark host too.
-   Items marked TODO in the HTML comments need the author's confirmation (title, author list, links, BibTeX). */
+   Publication links are enabled when the corresponding resources are available. */
 :root{
   color-scheme:light;
   --ground:#ffffff; --band:#f5f5f5; --ink:#363636; --ink-strong:#1f1f1f; --ink-2:#6b6b6b; --rule:#e6e6e6;
@@ -137,14 +140,14 @@ window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]
 <div class="container teaser">
   <figure>
     <div class="player"><video muted playsinline loop preload="metadata" width="1280" height="720" poster="media/video/race_webshop_1716.jpg" aria-label="Three WebShop browser windows side by side, each run by Qwen3.8-27B on the same shopping task with a different stopping rule, replayed on one shared clock: Full thinking, a fixed 352-token budget and StreamStop. Each window shows the real page the agent is on, how many reasoning tokens it is generating for the current decision, and a time track. StreamStop buys the right item in 18.7 seconds, the fixed budget in 43.3 seconds, Full thinking in 102.9 seconds."><source src="media/video/race_webshop_1716.mp4" type="video/mp4"></video><div class="ctrl"><button class="pp" type="button" aria-label="Play"></button><input type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through the animation"><button class="spd" type="button" aria-label="Playback speed">1×</button><span class="tm">0.0 / 0.0 s</span></div></div>
-    <p class="subtitle"><b>Same task, same reasoning model, one clock.</b> Qwen3.8-27B shops for the same item under three stopping rules, replayed in the real WebShop environment with the paper's H200 timing. Full thinking reads every reasoning token and arrives in 103 s; a fixed budget matched to StreamStop's token use takes 43 s; StreamStop stops each decision as soon as the reasoning has settled and buys the right item in 19 s.</p>
+    <p class="subtitle"><b>Adaptive reasoning before each action.</b> A WebShop test episode with Qwen3.8-27B under Full thinking, a fixed 352-token budget, and StreamStop. All three agents complete the task; StreamStop adapts the amount of reasoning to each decision. The replay uses recorded actions and the paper's H200-based timing.</p>
   </figure>
 </div>
 
 <div class="band">
   <section class="container narrow" aria-labelledby="abs">
     <h2 id="abs">Abstract</h2>
-    <p class="justify">Reasoning-enabled language model agents can incur substantial computation before acting, even though the amount of reasoning needed varies across decisions. Existing adaptive stopping methods use proxy signals such as confidence or intermediate-answer stability, whose effectiveness can vary across reasoning models. We introduce StreamStop, which learns when to stop from prefix-level action agreement using the available reasoning text. A frozen prefix reader supplies features to a lightweight stop head, while the reasoning model generates the action after stopping. We train the stop head with a discounted action-agreement objective and compute its expected return exactly over stopping times on recorded trajectories. Conditioning on the discount factor enables a single policy to support different trade-offs between reasoning consumption and action agreement. StreamStop keeps both language models frozen and requires no access to the reasoning model's internal states. We also construct a dataset of agent reasoning trajectories with prefix-level action annotations for offline evaluation of stopping decisions. In closed-loop evaluations on WebShop and ScienceWorld, StreamStop generally improves task success over matched fixed-budget stopping while consuming fewer reasoning tokens than Full thinking. On WebShop with Qwen3.8-27B, it uses 42% fewer reasoning tokens per episode with similar observed task success.</p>
+    <p class="justify">Reasoning-enabled language model agents can incur substantial computation before acting, although the reasoning needed varies across decisions. Existing stopping signals, such as confidence and intermediate-answer stability, can vary in effectiveness across reasoning models; signals obtained from hidden states or token probabilities also require internal access that may be unavailable or impractical. We introduce StreamStop, which learns model-specific stopping policies offline from prefix-level action agreement. A frozen prefix reader encodes available reasoning text for a lightweight stop head, allowing stopping without access to the reasoning model's internal signals. We construct a dataset of agent reasoning trajectories with prefix-level action annotations. These annotations compare each prefix action with the full-reasoning reference action, enabling offline comparison of stopping rules and exact expected-return optimization of a discounted action-agreement objective. Conditioning the head on the discount factor allows the agreement&ndash;token trade-off to be adjusted at inference without retraining. In closed-loop evaluations on WebShop and ScienceWorld, StreamStop achieves higher observed success than most validation-selected fixed-budget settings while using fewer reasoning tokens than Full thinking. On WebShop with Qwen3.8-27B, it uses 42% fewer reasoning tokens per episode with similar observed task success.</p>
   </section>
 </div>
 
@@ -152,40 +155,40 @@ window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]
   <section class="block" aria-labelledby="problem">
     <h2 id="problem">How much reasoning does one decision need?</h2>
     <div class="narrow">
-      <p class="justify">An agent reasons before every action, and the reasoning it needs varies from decision to decision. A fixed thinking budget is therefore a guess: too short, and the action changes; too long, and the agent spends tokens and seconds that do not change what it does. The right question is not how long the model reasons on average but at which point of <i>this</i> reasoning stream the action is already settled.</p>
+      <p class="justify">Language model agents can generate substantial reasoning before acting, but the amount needed varies across decisions. A short fixed budget can interrupt useful reasoning; a long one can continue after the action is already determined. StreamStop learns when the available reasoning is sufficient to preserve the reasoning model's full-reasoning action.</p>
     </div>
     <figure style="margin-top:22px">
       <div class="shot"><img src="media/motivation.png" width="1818" height="654" loading="lazy" alt="Panel (a): action agreement with the full-reasoning action as a function of the number of thinking tokens read, for a 1.7B prefix reader and for the 27B reasoning model forced to answer at that point. Panel (b): cumulative distribution over decisions of the sufficient prefix length for the reader and for the reasoning model, together with the full reasoning length."></div>
-      <figcaption><b>Where a decision settles.</b> WebShop validation decisions with Qwen3.8-27B as the reasoning model. (a) Agreement with the full-reasoning action after reading the first <i>k</i> thinking tokens, for a small prefix reader (Qwen3-1.7B, scoring the valid candidate actions) and for the reasoning model itself forced to answer at <i>k</i>. (b) Cumulative distribution of the sufficient prefix, the earliest prefix after which every later action agrees with the reference, against the full reasoning length. Thinking-token axes are logarithmic.</figcaption>
+      <figcaption><b>Action agreement across reasoning prefixes.</b> WebShop validation decisions with Qwen3.8-27B as the reasoning model. (a) Agreement with the full-reasoning action after reading the first <i>k</i> thinking tokens, for a small prefix reader (Qwen3-1.7B, scoring the valid candidate actions) and for the reasoning model itself forced to answer at <i>k</i>. (b) Cumulative distribution of the sufficient prefix, the earliest prefix after which every later action agrees with the reference, against the full reasoning length. Thinking-token axes are logarithmic.</figcaption>
     </figure>
   </section>
 
   <section class="block" aria-labelledby="method">
-    <h2 id="method">A small reader decides when the reasoning is enough</h2>
+    <h2 id="method">A small reader guides adaptive stopping</h2>
     <div class="narrow">
-      <p class="justify">The reasoning model \(\mathcal M\) streams its reasoning in chunks. After each chunk a frozen prefix reader \(\mathcal R\) encodes the prefix read so far, and a lightweight stop head \(\pi_\theta\), conditioned on a discount factor \(\gamma\), makes one binary call:</p>
+      <p class="justify">The reasoning model \(\mathcal M\) streams its reasoning in chunks. After each chunk a frozen prefix reader \(\mathcal R\) encodes the prefix read so far, and a lightweight stop head \(\pi_\theta\), conditioned on a discount factor \(\gamma\), chooses between two control actions:</p>
       <div class="clock" role="group" aria-label="Stop-head decision">
-        <div><span class="t">WAIT</span>receive the next reasoning chunk and read again</div>
-        <div><span class="t">STOP</span>\(\mathcal M\) acts from the prefix it has so far; the rest of the reasoning is never produced</div>
+        <div><span class="t">WAIT</span>Receive the next reasoning chunk and update the stopping decision.</div>
+        <div><span class="t">STOP</span>Ask \(\mathcal M\) to generate an action from the selected prefix.</div>
       </div>
-      <p class="justify">The head is trained offline, with no rollouts and no gradients through either language model. Every prefix \(t\) of a recorded trajectory \(\xi\) is labelled with whether the action generated from it agrees with the full-reasoning action, \(y_t\in\{0,1\}\), and the discounted agreement of a stopping policy is summed <i>exactly</i> over the finitely many stopping times, with \(q_t\) the probability of first stopping at prefix \(t\):</p>
+      <p class="justify">Once trajectories and prefix-action annotations have been collected, the stop head is trained offline without additional reasoning-model calls or environment rollouts. Both language models remain frozen. Each annotated prefix \(t\) of a recorded trajectory \(\xi\) is labelled with whether the action generated from it agrees with the full-reasoning action, \(y_t\in\{0,1\}\), and the expected discounted agreement is computed <i>exactly</i> over stopping times on each recorded trajectory, with \(q_t\) the probability of first stopping at prefix \(t\):</p>
       <div class="eqn">\[ J(\theta \mid \xi, \gamma) = \sum_{t=0}^{T} q_t\, \gamma^{t}\, y_t . \]</div>
-      <p class="justify">\(\gamma\) is an input, not a hyperparameter: one head trained with \(\gamma\) sampled from a range covers a whole family of trade-offs, and at deployment the choice is a single number. Lower \(\gamma\) stops earlier; higher \(\gamma\) waits for more agreement.</p>
+      <p class="justify">The head is conditioned on \(\gamma\), so a single trained policy supports different agreement&ndash;token trade-offs without retraining. Smaller values place more weight on early agreement; values closer to one place less penalty on waiting.</p>
     </div>
     <figure style="margin-top:22px">
       <div class="shot pad"><img src="media/overview.png" width="2400" height="1135" loading="lazy" alt="Left: during agent interaction the frozen reasoning model streams reasoning chunks; a frozen prefix reader encodes the public context and the available prefix into features; a trainable stop head conditioned on the discount factor outputs WAIT or STOP; on STOP the reasoning model generates the action from the current prefix. Right: on a recorded trajectory every prefix is annotated with whether its action agrees with the full-reasoning reference action, and the stop head is trained on the exact expected discounted agreement over stopping times."></div>
       <figcaption><b>StreamStop at a glance.</b> (a) Inference: reasoning model, prefix reader and stop head during one decision. (b) Training: recorded trajectories with per-prefix agreement labels, the exact expected return over stopping times, and one γ-conditioned policy for different trade-offs.</figcaption>
     </figure>
     <figure style="margin-top:28px">
-      <div class="shot"><img src="media/validation.png" width="2204" height="595" loading="lazy" alt="Four panels of action agreement against reasoning tokens per decision on validation decisions: WebShop with Qwen3.8 and with Nemotron, ScienceWorld with Qwen3.8 and with Gemini. StreamStop at a sweep of discount factors is compared with constant budgets, EAT settings, a Dynasor-CoT sweep, no thinking and full thinking."></div>
-      <figcaption><b>One head, a whole frontier.</b> Validation action agreement against reasoning tokens per decision for four environment and reasoning-model pairs. The StreamStop curve is a single stop head swept over γ; Const-<i>k</i> stops after <i>k</i> tokens; EAT and Dynasor-CoT are swept over their own settings. For Gemini 3.1 Flash-Lite the observable explicit plan stands in for the hidden native reasoning.</figcaption>
+      <div class="shot"><img src="media/validation.png" width="2204" height="595" loading="lazy" alt="Four panels of action agreement against reasoning tokens per decision on validation decisions: WebShop with Qwen3.8 and with Nemotron, ScienceWorld with Qwen3.8 and with Gemini. StreamStop at a sweep of discount factors is compared with constant budgets, EAT-proxy settings, a Dynasor-CoT sweep, no thinking and full thinking."></div>
+      <figcaption><b>Validation agreement&ndash;token curves.</b> Validation action agreement against reasoning tokens per decision for four environment and reasoning-model pairs. The StreamStop curve is a single stop head swept over γ; Const-<i>k</i> stops after <i>k</i> tokens; EAT-proxy and Dynasor-CoT are swept over their own settings. For Gemini 3.1 Flash-Lite the observable explicit plan stands in for the hidden native reasoning.</figcaption>
     </figure>
   </section>
 
   <section class="block" aria-labelledby="results">
     <h2 id="results">Results</h2>
     <div class="narrow">
-      <p class="justify">Closed-loop task success on the test sets against the existing stopping rules. The proxy-signal methods rank differently from one reasoning model to the next: EAT is strong on Gemini and weak on Qwen3.8, Dynasor-CoT the other way round on Nemotron. StreamStop stays within three points of Full thinking in every configuration while reading 18&ndash;52% fewer reasoning tokens, and on WebShop it beats every other stopping rule by a wide margin.</p>
+      <p class="justify">StreamStop achieves higher observed success than most validation-selected fixed-budget settings across the evaluated environment&ndash;model configurations. On WebShop with Qwen3.8-27B, it uses 42% fewer reasoning tokens per episode with similar observed success to Full thinking. The relative performance of confidence- and consistency-based stopping varies across reasoning models, motivating a stopping criterion learned from each model's prefix-action behavior.</p>
     </div>
     <div class="tablewrap cmp" style="margin-top:18px">
       <table>
@@ -196,28 +199,34 @@ window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]
         <tbody>
           <tr class="ref"><td>Full thinking (reference)</td><td>43.0</td><td>5,945</td><td>34.5</td><td>5,374</td><td>52.1</td><td>45,380</td><td>47.1</td><td>10,980</td></tr>
           <tr><td>No thinking</td><td>13.2</td><td>0</td><td>18.3</td><td>0</td><td>32.0</td><td>0</td><td>39.9</td><td>0</td></tr>
-          <tr><td>Const-M (matched budget)</td><td>35.7</td><td>2,119</td><td>32.5</td><td>1,599</td><td class="best">50.1</td><td>12,562</td><td>45.4</td><td>6,500</td></tr>
-          <tr><td>EAT</td><td>33.2</td><td>2,369</td><td>29.5</td><td>2,035</td><td>48.8</td><td>15,095</td><td class="best">49.2</td><td>8,596</td></tr>
+          <tr><td>Const-M (validation-matched)</td><td>35.7</td><td>2,119</td><td>32.5</td><td>1,599</td><td>50.1</td><td>12,562</td><td>45.4</td><td>6,500</td></tr>
+          <tr><td>EAT-proxy</td><td>33.2</td><td>2,369</td><td>29.5</td><td>2,035</td><td>48.8</td><td>15,095</td><td class="best">49.2</td><td>8,596</td></tr>
           <tr><td>Dynasor-CoT</td><td>31.7</td><td>2,082</td><td>36.2</td><td>2,338</td><td>48.1</td><td>17,868</td><td>44.6</td><td>7,718</td></tr>
           <tr><td class="ours">StreamStop, γ = 0.98</td><td class="ours">40.3</td><td class="ours">2,675</td><td class="ours">35.5</td><td class="ours">2,693</td><td class="ours">49.2</td><td class="ours">20,757</td><td class="ours">47.1</td><td class="ours">8,757</td></tr>
-          <tr><td class="ours">StreamStop, γ = 0.99</td><td class="ours best">42.8</td><td class="ours">3,464</td><td class="ours best">36.3</td><td class="ours">3,263</td><td class="ours">49.2</td><td class="ours">21,665</td><td class="ours">46.1</td><td class="ours">8,977</td></tr>
-          <tr><td class="ours">StreamStop, γ = 0.995</td><td class="ours">41.8</td><td class="ours">4,540</td><td class="ours">37.0</td><td class="ours">3,727</td><td class="ours best">50.8</td><td class="ours">23,680</td><td class="ours">47.0</td><td class="ours">9,183</td></tr>
+          <tr><td class="ours">StreamStop, γ = 0.99</td><td class="ours best">42.8</td><td class="ours">3,464</td><td class="ours">36.3</td><td class="ours">3,263</td><td class="ours">49.2</td><td class="ours">21,665</td><td class="ours">46.1</td><td class="ours">8,977</td></tr>
+          <tr><td class="ours">StreamStop, γ = 0.995</td><td class="ours">41.8</td><td class="ours">4,540</td><td class="ours best">37.0</td><td class="ours">3,727</td><td class="ours best">50.8</td><td class="ours">23,680</td><td class="ours">47.0</td><td class="ours">9,183</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="note">Test-set means over three evaluation seeds (Gemini: eight). tok/ep = reasoning tokens per episode; for Gemini they are explicit-plan tokens in reader-token units. Underlined: best success among the stopping rules (Full thinking excluded). Const-M stops after a per-setting token count chosen on the validation set to match StreamStop's mean consumption at γ = 0.99; EAT and Dynasor-CoT use one setting across all environments. Standard deviations across seeds and the remaining baseline settings are in the paper's Table 2.</p>
+    <p class="note">Test-set means over three evaluation seeds (Gemini: eight). tok/ep = reasoning tokens per episode; for Gemini they are explicit-plan tokens in reader-token units. Underlined: highest observed success among the stopping settings shown (Full thinking excluded). Const-M uses a fixed budget selected on validation data to match StreamStop at γ = 0.99; realized test token use can differ. The paper's Table 2 includes seed variability and additional fixed-budget settings.</p>
 
     <div class="narrow">
-      <h3>Fewer tokens is also less time</h3>
+      <h3>Text-based stopping with a closed-weight model</h3>
+      <p class="justify">Gemini 3.1 Flash-Lite provides an API-based proxy evaluation of the stopping interface. We disable native thinking and elicit an explicit plan, then ask the same model to act from a selected plan prefix. This evaluates stopping without hidden-state or token-probability access; the reported tokens measure selected plan text, not API billing savings from interrupting native reasoning.</p>
+    </div>
+
+    <div class="narrow">
+      <h3>Decision Latency and Reader Overhead</h3>
+      <p class="justify">StreamStop reduces decision latency relative to Full thinking for the evaluated local reasoning models. Prefix reading overlaps generation; waiting for the reader accounts for a median 0.56% of mean decision latency across the evaluated StreamStop settings.</p>
     </div>
     <figure style="margin-top:12px">
-      <div class="shot"><img src="media/latency.png" width="2204" height="661" loading="lazy" alt="Panels (a) to (c): success rate against estimated seconds per decision for WebShop with Qwen3.8, WebShop with Nemotron and ScienceWorld with Qwen3.8, comparing StreamStop at three discount factors with constant budgets, EAT, Dynasor-CoT, no thinking and full thinking. Panel (d): box summaries of the reader update time and the reasoning chunk interval in milliseconds."></div>
-      <figcaption><b>Success against seconds per decision.</b> (a&ndash;c) Test success (95% Wilson intervals) against the per-decision latency estimated from the recorded token counts with H200 timing. (d) Measured reader update time and reasoning chunk interval (box: interquartile range, line: median, whiskers: 10th&ndash;90th percentile). The reader runs in parallel with generation and adds under 2% to the decision latency in every setting.</figcaption>
+      <div class="shot"><img src="media/latency.png" width="2204" height="661" loading="lazy" alt="Panels (a) to (c): success rate against estimated seconds per decision for WebShop with Qwen3.8, WebShop with Nemotron and ScienceWorld with Qwen3.8, comparing StreamStop at three discount factors with constant budgets, EAT-proxy, Dynasor-CoT, no thinking and full thinking. Panel (d): box summaries of the reader update time and the reasoning chunk interval in milliseconds."></div>
+      <figcaption><b>Success against seconds per decision.</b> (a&ndash;c) Test success (95% Wilson intervals) against the per-decision latency estimated from the recorded token counts with H200 timing. (d) Measured reader update time and reasoning chunk interval (box: interquartile range, line: median, whiskers: 10th&ndash;90th percentile).</figcaption>
     </figure>
 
     <div class="narrow">
-      <h3>Fast is not the same as right</h3>
-      <p class="justify">Stopping early is only useful if the action survives. In the episode below the fixed budget stops after 352 tokens every time and buys the wrong shirt in 32 s; StreamStop keeps reading when the reasoning is still undecided and spends 102 s, but buys the right one, as Full thinking does in 246 s.</p>
+      <h3>Adaptive Reasoning in Agent Interaction</h3>
+      <p class="justify">In this WebShop test episode, the fixed 352-token budget leads to an incorrect purchase. StreamStop waits longer when needed and completes the task with less reasoning than Full thinking. Together, the two selected replays illustrate how adaptive stopping allocates reasoning differently across decisions.</p>
     </div>
     <figure style="margin-top:12px">
       <div class="player"><video muted playsinline loop preload="metadata" width="1280" height="720" poster="media/video/race_webshop_4042.jpg" aria-label="Three WebShop browser windows on the same shopping task under Full thinking, a fixed 352-token budget and StreamStop, on one shared clock. The fixed budget buys a wrong item after 32 seconds; StreamStop and Full thinking buy the right item after 102 and 246 seconds."><source src="media/video/race_webshop_4042.mp4" type="video/mp4"></video><div class="ctrl"><button class="pp" type="button" aria-label="Play"></button><input type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through the animation"><button class="spd" type="button" aria-label="Playback speed">1×</button><span class="tm">0.0 / 0.0 s</span></div></div>
@@ -225,8 +234,8 @@ window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]
     </figure>
 
     <div class="narrow">
-      <h3>What the stop head reads</h3>
-      <p class="justify">The head's stop probability stays near zero through exploration and rises once the reasoning has committed to a plan. Below, two validation decisions in WebShop: the full reasoning is shown with the stop probability after each chunk as shading, and the point at which each method stops is marked with the action it then takes.</p>
+      <h3>Qualitative Analysis of Stopping Decisions</h3>
+      <p class="justify">In these two WebShop validation examples, the stop probability rises as the prefix develops a concrete action. Shading follows the stop head along the reasoning text, while the markers compare method cutoffs and the actions generated from them.</p>
     </div>
     <figure style="margin-top:12px">
       <div class="shot pad"><img src="media/qualitative.png" width="2520" height="1614" loading="lazy" alt="Two WebShop reasoning streams rendered as text with blue shading for the stop probability after each chunk; the StreamStop, Dynasor-CoT, Const-M and EAT-proxy cutoffs are marked, and under each stream the action chosen at each cutoff is listed with a check or cross for agreement with the full-reasoning action."></div>
@@ -237,7 +246,7 @@ window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]
   <section class="block" aria-labelledby="data">
     <h2 id="data">A dataset of reasoning prefixes with their actions</h2>
     <div class="narrow">
-      <p class="justify">Training and evaluating a stopping rule offline needs something ordinary agent logs do not have: the action the model <i>would</i> have taken from each earlier prefix. We recorded it. For every reasoning stream in the collection, the reasoning model was asked to act from a grid of prefix lengths, so stopping rules can be compared on agreement and tokens without any new generation or environment rollout.</p>
+      <p class="justify">A completed reasoning trajectory records the final action, but does not reveal which action the model would generate from an earlier prefix. We collect prefix-action annotations by asking the reasoning model to act from intermediate prefixes while holding the environment context fixed. These annotations enable offline training and comparison of stopping rules on the same recorded decisions, using action agreement and reasoning tokens used.</p>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Collection (training and validation tasks, four environment–model pairs)</th><th>Count</th></tr></thead>
@@ -248,7 +257,7 @@ window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]
           </tbody>
         </table>
       </div>
-      <p class="note">Unsuccessful episodes and invalid action responses are kept. Each record carries the task and public context, the full reasoning text, the full-reasoning action, and per-prefix generated actions with parser results. The release is planned together with the code.</p>
+      <p class="note">The collection includes successful and unsuccessful episodes, along with invalid action responses. Prefix-annotation coverage varies across collected streams; the paper specifies the filtered subset used for training and validation. Dataset files and documentation will be linked here when the release is available.</p>
     </div>
   </section>
 
