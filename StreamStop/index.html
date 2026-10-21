@@ -262,8 +262,8 @@ window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]
 
 <section class="container" aria-labelledby="bibtex" style="padding-block:36px">
   <h2 id="bibtex">BibTeX</h2>
-  <p><a href="citation.bib" download>Download citation.bib</a></p>
-  <pre style="overflow-x:auto;padding:20px;background:#f5f5f7;border-radius:8px;text-align:left"><code>@article{oh2026streamstop,
+  <p><button class="btn" type="button" id="copy-bibtex" aria-controls="bibtex-code">Copy BibTeX</button> <span id="copy-bibtex-status" role="status" style="margin-left:10px;font-size:14px"></span></p>
+  <pre style="overflow-x:auto;padding:20px;background:#f5f5f7;border-radius:8px;text-align:left"><code id="bibtex-code">@article{oh2026streamstop,
   title={Adaptive Stopping of Streamed Reasoning for Language Model Agents},
   author={Oh, JunHyeok and Lee, Byung-Jun},
   journal={arXiv preprint arXiv:2610.27981},
@@ -280,6 +280,24 @@ window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]
 <footer class="container">Page layout follows the Academic Project Page Template (adapted from Nerfies).</footer>
 
 <script>
+(function(){
+  var button = document.getElementById("copy-bibtex");
+  var code = document.getElementById("bibtex-code");
+  var status = document.getElementById("copy-bibtex-status");
+  var reset;
+  button.addEventListener("click", async function(){
+    clearTimeout(reset);
+    try {
+      await navigator.clipboard.writeText(code.textContent.trim() + "\n");
+      button.textContent = "Copied!";
+      status.textContent = "Citation copied to clipboard.";
+      reset = setTimeout(function(){ button.textContent = "Copy BibTeX"; status.textContent = ""; }, 2500);
+    } catch (error) {
+      button.textContent = "Copy BibTeX";
+      status.textContent = "Copy unavailable. Select the citation below and copy it manually.";
+    }
+  });
+})();
 /* Scrubbable players: autoplay (muted) while on screen, pause off screen; drag the slider to any moment. */
 (function(){
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
