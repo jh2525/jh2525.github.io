@@ -37,9 +37,9 @@ cv:
         authors:
           - "**JunHyeok Oh**"
           - Byung-Jun Lee
-        publisher: Preprint, under review
+        publisher: arXiv preprint arXiv:2610.27981
         releaseDate: 2026
-        url: https://jh2525.github.io/StreamStop/
+        url: https://arxiv.org/abs/2610.27981
         summary: "Project page: https://jh2525.github.io/StreamStop/"
 
       - title: "HorizonFlow: Variable-Length Planning for Offline Goal-Conditioned RL"
